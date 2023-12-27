@@ -88,12 +88,13 @@ const displayButtonFilters = (categories) => {
  */
 const filterByCategory = (idCategory, works) => {
   console.log("ID de la catégorie filtrée :", idCategory);
-  console.log("Travaux à filtrer :", works);
+  console.log("Travaux à filtrer :", works)
+ 
   // on peut maintenant filtrer les travaux par catégorie (A REDIGER !!!)
   // Filtre les travaux en fonction de la catégorie sélectionnée
   const filteredWorks = works.filter(work => work.category === idCategory);
   console.log("Travaux filtrés :", filteredWorks)
-
+  
   // Affiche les travaux filtrés dans la galerie
   const gallery = document.querySelector(".gallery");
   gallery.innerHTML = ''; // Supprime les éléments actuels dans la galerie
@@ -101,7 +102,7 @@ const filterByCategory = (idCategory, works) => {
   // Appel de la fonction displayWorks pour créer les éléments dans le DOM avec les travaux filtrés
   displayWorks(filteredWorks);
 };
-
+console.log("pouet")
 /**************************************************************************** */
 /**
  * au chargement de la page
@@ -141,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     //console.log(clic);
     //console.log("TARGET : ", clic.target);
     const idCategory = clic.target.id;
-    console.log("ID de la catégorie cliquée :", idCategory);
+    //console.log("ID de la catégorie cliquée :", idCategory);
 
     // UNE fois qu'on a l'ID de la catégorie, on peut filtrer
     // reponse(idCategory);
