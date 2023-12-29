@@ -46,7 +46,7 @@ function displayCategoriesButton(categoryList, workList) {
   button.innerText = category.name;
   div.appendChild(button)
   button.addEventListener("click", () => {
-    const workfilter = workList.filter((work) => work.category.id === category.id);
+    const workfilter = workList.filter((work) => work.category.id === category.id || category.id === null);
     displayWorks(workfilter)
   });
 })
