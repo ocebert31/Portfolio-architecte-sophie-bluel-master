@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", async() => {
   const works = await getWorks();
   console.table(works);
   displayWorks(works);
-  allButton(works);
+ 
   const categories = await getCategories();
-  console.table(categories);
+  console.table(categories); 
+  // allButton(works);
   displayCategoriesButton(categories, works);
 });
 
@@ -37,18 +38,18 @@ async function getCategories() {
   return await reponse.json();
 }
 
-function allButton(works) {
-  const div = document.createElement("div");
-  const introductionTitle = document.querySelector("#portfolio h2")
-  introductionTitle.insertAdjacentElement("afterend", div);
+// function allButton(works) {
+//   const div = document.createElement("div");
+//   const introductionTitle = document.querySelector("#portfolio h2")
+//   introductionTitle.insertAdjacentElement("afterend", div);
 
-  let button = document.createElement("button");
-  button.innerText = "Tous"
-  div.appendChild(button)
-  button.addEventListener("click", () => {
-    displayWorks(works)
-  });
-}
+//   let button = document.createElement("button");
+//   button.innerText = "Tous"
+//   div.appendChild(button)
+//   button.addEventListener("click", () => {
+//     displayWorks(works)
+//   });
+// }
 
 function displayCategoriesButton(categoryList, workList) {
   const div = document.createElement("div");
@@ -56,14 +57,19 @@ function displayCategoriesButton(categoryList, workList) {
   introductionTitle.insertAdjacentElement("afterend", div);
 
   
+
+  function button(categoryName, categoryId) {
+    button("Tous", null)
   categoryList.forEach((category) => {
-  let button = document.createElement("button");
-  button.innerText = category.name;
-  div.appendChild(button)
-  button.addEventListener("click", () => {
-    const workfilter = workList.filter((work) => work.category.id === category.id || category.id === null);
-    displayWorks(workfilter)
-  });
-})
+    
+  })
+    let button = document.createElement("button");
+    button.innerText = categoryName;
+    div.appendChild(button)
+    button.addEventListener("click", () => {
+      const workfilter = workList.filter((work) => work.category.id === categoryId || categoryId === null);
+      displayWorks(workfilter)
+    });
+  }
 }
 
