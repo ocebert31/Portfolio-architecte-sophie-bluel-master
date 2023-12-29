@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   const works = await getWorks();
   console.table(works);
   displayWorks(works);
+  allButton(works);
   const categories = await getCategories();
   console.table(categories);
   displayCategoriesButton(categories, works);
@@ -36,11 +37,25 @@ async function getCategories() {
   return await reponse.json();
 }
 
+function allButton(works) {
+  const div = document.createElement("div");
+  const introductionTitle = document.querySelector("#portfolio h2")
+  introductionTitle.insertAdjacentElement("afterend", div);
+
+  let button = document.createElement("button");
+  button.innerText = "Tous"
+  div.appendChild(button)
+  button.addEventListener("click", () => {
+    displayWorks(works)
+  });
+}
+
 function displayCategoriesButton(categoryList, workList) {
   const div = document.createElement("div");
   const introductionTitle = document.querySelector("#portfolio h2")
   introductionTitle.insertAdjacentElement("afterend", div);
 
+  
   categoryList.forEach((category) => {
   let button = document.createElement("button");
   button.innerText = category.name;
