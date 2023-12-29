@@ -52,17 +52,20 @@ async function getCategories() {
 // }
 
 function displayCategoriesButton(categoryList, workList) {
-  const div = document.createElement("div");
-  const introductionTitle = document.querySelector("#portfolio h2")
-  introductionTitle.insertAdjacentElement("afterend", div);
-
+  const divButton = divButton()
   
-
-  function button(categoryName, categoryId) {
+  function divButton() {
+    const div = document.createElement("div");
+    const introductionTitle = document.querySelector("#portfolio h2")
+    introductionTitle.insertAdjacentElement("afterend", div);
+  }
+  
     button("Tous", null)
-  categoryList.forEach((category) => {
-    
+    categoryList.forEach((category) => {
+    button(categoryName, categoryId)
   })
+
+  function filterButton(categoryName, categoryId)
     let button = document.createElement("button");
     button.innerText = categoryName;
     div.appendChild(button)
@@ -70,6 +73,5 @@ function displayCategoriesButton(categoryList, workList) {
       const workfilter = workList.filter((work) => work.category.id === categoryId || categoryId === null);
       displayWorks(workfilter)
     });
-  }
 }
 
