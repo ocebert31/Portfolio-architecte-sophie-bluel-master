@@ -5,8 +5,7 @@ document.addEventListener("DOMContentLoaded", async() => {
  
   const categories = await getCategories();
   console.table(categories); 
-  // allButton(works);
-  displayCategoriesButton(categories, works);
+  displayCategoryButtons(categories, works);
 });
 
 async function getWorks() {
@@ -38,40 +37,49 @@ async function getCategories() {
   return await reponse.json();
 }
 
-// function allButton(works) {
-//   const div = document.createElement("div");
-//   const introductionTitle = document.querySelector("#portfolio h2")
-//   introductionTitle.insertAdjacentElement("afterend", div);
-
-//   let button = document.createElement("button");
-//   button.innerText = "Tous"
-//   div.appendChild(button)
-//   button.addEventListener("click", () => {
-//     displayWorks(works)
-//   });
-// }
-
-function displayCategoriesButton(categoryList, workList) {
-  const divButton = divButton()
+function displayCategoryButtons(categoryList, workList) {
+  const div = divButton();
+  
+  createButton("Tous", null);
+  categoryList.forEach((category) => {
+    createButton(category.name, category.id);
+  });
   
   function divButton() {
+    const introductionTitle = document.querySelector("#portfolio h2");
     const div = document.createElement("div");
-    const introductionTitle = document.querySelector("#portfolio h2")
     introductionTitle.insertAdjacentElement("afterend", div);
+    div.style = "text-align: center; margin-bottom: 40px;";
+    return div;
   }
-  
-    button("Tous", null)
-    categoryList.forEach((category) => {
-    button(categoryName, categoryId)
-  })
 
-  function filterButton(categoryName, categoryId)
-    let button = document.createElement("button");
-    button.innerText = categoryName;
-    div.appendChild(button)
+  function createButton(name, categoryId) {
+    const button = document.createElement("button");
+    button.innerHTML = name;
+    button.classList = "filter";
+    div.appendChild(button);
+    button.style = "margin-right: 13px; font-size: 17px; border-radius: 30px; border-color: #1D6154; color: #1D6154; background-color: white; font-weight: bold; padding: 6px 25px 6px 25px; border: 1px solid #1D6154; font-family: 'Work Sans';"
+
     button.addEventListener("click", () => {
-      const workfilter = workList.filter((work) => work.category.id === categoryId || categoryId === null);
-      displayWorks(workfilter)
+      const workFilter = workList.filter((work) => {
+        return work.category.id === categoryId || categoryId === null;
+      })
+      displayWorks(workFilter);
+      document.querySelectorAll(".filter").forEach(button => {
+        button.style.backgroundColor = "white";
+        button.style.color = "#1D6154";
+      });
+        button.style.backgroundColor = "#1D6154";
+        button.style.color = "white";
+      // buttonclique = !buttonclique;
+
+      // if (buttonclique) {
+      //   buttonclique.style.backgroundColor = "#1D6154"; // Couleur lorsque le bouton est cliqué
+      // } else {
+      //   buttonclique.style.backgroundColor = "white"; // Couleur lorsque le bouton n'est pas cliqué
+      // }
     });
+  }
 }
+
 
