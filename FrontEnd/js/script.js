@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", async() => {
   const categories = await getCategories();
   console.table(categories); 
   displayCategoryButtons(categories, works);
+
+  linklogin()
 });
 
 async function getWorks() {
@@ -69,10 +71,74 @@ function displayCategoryButtons(categoryList, workList) {
         button.style.backgroundColor = "white";
         button.style.color = "#1D6154";
       });
-        button.style.backgroundColor = "#1D6154";
+        button.style.backgroundColor = "#1D6154"; 
         button.style.color = "white";
     });
   }
 }
+
+function linklogin() {
+  const listItems = document.querySelectorAll('li');
+  const thirdListItem = listItems[2];
+  thirdListItem.setAttribute('id', 'login');
+  const loginButton = document.getElementById('login');
+
+  loginButton.addEventListener('click', () => {
+    const header = document.querySelector("header");
+    header.style.visibility = "visible";
+
+    const main = document.querySelector("main");
+    main.style.display = "none";
+
+    const login = document.createElement("div");
+    main.insertAdjacentElement("afterend", login);
+
+    const footer = document.querySelector("footer");
+    footer.style.visibility = "visible";
+
+    const formular = document.createElement("form");
+    formular.style = "display: grid; justify-content: center;"
+    login.appendChild(formular);
+
+    const legend = document.createElement("legend");
+    legend.innerText = "Log In";
+    legend.style = "font-size: 30px; color: #1D6154; font-family: Syne; text-align: center;"
+    formular.appendChild(legend);
+
+    const labelMail = document.createElement("label");
+    labelMail.textContent = "E-mail";
+    labelMail.style = "display: block; margin-top: 25px; margin-bottom: 10px; font-size: 14px;";
+    formular.appendChild(labelMail);
+
+    const inputMail = document.createElement("input");
+    inputMail.type = "text";
+    inputMail.name = "E-mail";
+    inputMail.style = "display: block; width: 379px; height: 51px; background: rgba(255, 255, 255, 1); box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px;"
+    formular.appendChild(inputMail);
+    
+    const labelPassword = document.createElement("label");
+    labelPassword.textContent = "Mot de passe";
+    labelPassword.style = "display: block; margin-top: 15px; margin-bottom: 10px;"
+    formular.appendChild(labelPassword);
+
+    const inputPassword = document.createElement("input");
+    inputPassword.type = "password";
+    inputPassword.name = "mot de passe";
+    inputPassword.style = "display: block; width: 379px; height: 51px; background: rgba(255, 255, 255, 1); box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px";
+    formular.appendChild(inputPassword); 
+
+    const boutonSeConnecter = document.createElement("input");
+    boutonSeConnecter.value = "Se connecter";
+    boutonSeConnecter.type = "submit";
+    boutonSeConnecter.style = "display: grid; justify-content: center; height: 36px;"
+    login.appendChild(boutonSeConnecter);
+
+    const passwordforget = document.createElement("p");
+    passwordforget.innerText = "Mot de passe oublié"
+    passwordforget.style = "display: grid; justify-content: center; font-size: 14px; text-decoration-line: underline;"
+    login.appendChild(passwordforget);
+});
+} 
+
 
 
