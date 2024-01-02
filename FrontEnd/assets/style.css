@@ -186,3 +186,39 @@ footer nav ul {
 	margin: 2em
 }
 
+.alignement {
+	display: grid; 
+	justify-content: center;
+}
+
+legend {
+	font-size: 30px; 
+	color: #1D6154; 
+	font-family: Syne; 
+	text-align: center;
+}
+
+.allInputStyle {
+	display: block; 
+	width: 379px; 
+	height: 51px; 
+	background: rgba(255, 255, 255, 1); 
+	box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); 
+	border-width: 0px;
+}
+
+.dispositionLabel {
+	display: block; 
+	margin-top: 25px; 
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+
+#height {
+	height: 36px;
+}
+
+#styleLink {
+	font-size: 14px; 
+	text-decoration-line: underline;
+}
