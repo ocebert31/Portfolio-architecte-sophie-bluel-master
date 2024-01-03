@@ -6,42 +6,46 @@ document.addEventListener("DOMContentLoaded", async() => {
 function linklogin() {
   const formular = document.querySelector("form");
   formular.addEventListener("submit", async function (event) {
-    console.log("POUET2")
     event.preventDefault();
-    //creation de l'objet password
-    const passwordLogin = {
-    email: event.target.querySelector("input[name=email]").value,
-    password: event.target.querySelector("input[name=password]").value,
+
+    if (verifierEmail()) {
+      const body = buildBody(event);
+      const response = await postLogin(body);
+      handleResponse(response);
+    
+    } else {
+      console.log("le format de l'email n'est pas valide")
+    }
+  });
+
+  function buildBody(event) {
+    const formData = {
+      email: event.target.querySelector("input[name=email]").value,
+      password: event.target.querySelector("input[name=password]").value,
     };
-    console.log(passwordLogin);
-  
-    const combinaisonMailPass = JSON.stringify(passwordLogin);
-  
-    const response = await fetch("http://localhost:5678/api/users/login", {
+    let body = JSON.stringify(formData);
+    return body;
+  }
+
+  //recuperer id et token
+  async function postLogin(body) {
+    return await fetch("http://localhost:5678/api/users/login", {
       method: "POST",
       headers: {
-      "accept": " application/json",
-      "Content-Type": "application/json" 
+        "accept": " application/json",
+        "Content-Type": "application/json" 
       },
-      body: combinaisonMailPass,
+      body: body
     });
-        
+  }
+
+  function handleResponse(response) {
     if (response.status === 200) {
       console.log(response);
     } else {
-      console.log("la requête n'a pas abouti"); // “Erreur dans l’identifiant ou le mot de passe
+      console.log("Erreur dans l'identifiant ou le mot de passe");
     }
-
-    const email = document.querySelector("input[name=email]").value
-    let validEmail = new RegExp("[a-z]+\.+[a-z]+@+[a-z]+\.+[a-z]");
-    let emailGood = validEmail.test(email);
-    console.log(emailGood);
-    if(emailGood) {
-      console.log("c'est bon");
-    } else {
-      console.log("c'est pas bon");
-    }
-  });
+  }
 };
 
 function stockToken() {
@@ -52,6 +56,8 @@ function stockToken() {
   localStorage.setItem("monToken", monToken);
 }
 
-
-
-
+function verifierEmail() {
+  email = document.querySelector("input[name=email]").value;
+  let validEmail = new RegExp("[a-z]+\.+[a-z]+@+[a-z]+\.+[a-z]");
+  return validEmail.test(email);
+}
