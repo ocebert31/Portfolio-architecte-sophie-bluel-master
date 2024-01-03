@@ -8,13 +8,13 @@ function linklogin() {
   formular.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    if (verifierEmail()) {
+    if (checkEmail()) {
       const body = buildBody(event);
       const response = await postLogin(body);
       handleResponse(response);
     
     } else {
-      afficherErreur("le format de l'email n'est pas valide")
+      displayError("le format de l'email n'est pas valide")
     }
   });
 
@@ -42,12 +42,15 @@ function linklogin() {
   function handleResponse(response) {
     if (response.status === 200) {
       console.log(response);
+      changeLoginButtonText("Log out")
       history.back();
+      // const butcat = document.querySelector('filter')
+      // butcat.style.display = "none";
     } else if (response.status === 404) {
-      afficherErreur("Utilisateur introuvable");
+      displayError("Utilisateur introuvable");
       console.log(response);
     } else {
-      afficherErreur("Erreur dans l'identifiant ou le mot de passe");
+      displayError("Erreur dans l'identifiant ou le mot de passe");
       console.log(response);
     }
   }
@@ -61,13 +64,13 @@ function stockToken() {
   localStorage.setItem("monToken", monToken);
 }
 
-function verifierEmail() {
+function checkEmail() {
   email = document.querySelector("input[name=email]").value;
   let validEmail = new RegExp("[a-z]+\\.+[a-z]+@+[a-z]+\\.+[a-z]+");
   return validEmail.test(email);
 }
 
-function afficherErreur(message) {
+function displayError(message) {
   const div = document.createElement("div");
   div.style = "color: red;";
   div.innerText = message
@@ -76,4 +79,11 @@ function afficherErreur(message) {
   changeInputEmail.addEventListener("click", function() {
     div.style.display = "none";
   });
+}
+
+ function changeLoginButtonText(newText) {
+  const loginButton = document.getElementById("login");
+  if (loginButton) {
+    loginButton.innerText = newText;
+  }
 }
