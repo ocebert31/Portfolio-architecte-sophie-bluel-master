@@ -14,7 +14,7 @@ function linklogin() {
       handleResponse(response);
     
     } else {
-      console.log("le format de l'email n'est pas valide")
+      afficherErreur("le format de l'email n'est pas valide")
     }
   });
 
@@ -42,8 +42,13 @@ function linklogin() {
   function handleResponse(response) {
     if (response.status === 200) {
       console.log(response);
+      history.back();
+    } else if (response.status === 404) {
+      afficherErreur("Utilisateur introuvable");
+      console.log(response);
     } else {
-      console.log("Erreur dans l'identifiant ou le mot de passe");
+      afficherErreur("Erreur dans l'identifiant ou le mot de passe");
+      console.log(response);
     }
   }
 };
@@ -58,6 +63,17 @@ function stockToken() {
 
 function verifierEmail() {
   email = document.querySelector("input[name=email]").value;
-  let validEmail = new RegExp("[a-z]+\.+[a-z]+@+[a-z]+\.+[a-z]");
+  let validEmail = new RegExp("[a-z]+\\.+[a-z]+@+[a-z]+\\.+[a-z]+");
   return validEmail.test(email);
+}
+
+function afficherErreur(message) {
+  const div = document.createElement("div");
+  div.style = "color: red;";
+  div.innerText = message
+  const changeInputEmail = document.getElementById("email");
+  changeInputEmail.insertAdjacentElement("afterend", div);
+  changeInputEmail.addEventListener("click", function() {
+    div.style.display = "none";
+  });
 }
