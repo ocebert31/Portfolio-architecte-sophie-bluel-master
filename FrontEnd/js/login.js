@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async() => {
-    linklogin()
-    stockToken()
+    linklogin();
 });
 
 function linklogin() {
@@ -39,30 +38,19 @@ function linklogin() {
     });
   }
 
-  function handleResponse(response) {
+  async function handleResponse(response) {
     if (response.status === 200) {
-      console.log(response);
-      changeLoginButtonText("Log out")
+      const result = await response.json();
+      localStorage.setItem("token", result.token);
       history.back();
-      // const butcat = document.querySelector('filter')
-      // butcat.style.display = "none";
+      recupToken()
     } else if (response.status === 404) {
       displayError("Utilisateur introuvable");
-      console.log(response);
     } else {
       displayError("Erreur dans l'identifiant ou le mot de passe");
-      console.log(response);
     }
   }
 };
-
-function stockToken() {
-  // Récupérer le token
-  var monToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY1MTg3NDkzOSwiZXhwIjoxNjUxOTYxMzM5fQ.JGN1p8YIfR-M-5eQ-Ypy6Ima5cKA4VbfL2xMr2MgHm4";
-
-  // Stocker le token dans le local storage
-  localStorage.setItem("monToken", monToken);
-}
 
 function checkEmail() {
   email = document.querySelector("input[name=email]").value;
@@ -79,11 +67,4 @@ function displayError(message) {
   changeInputEmail.addEventListener("click", function() {
     div.style.display = "none";
   });
-}
-
- function changeLoginButtonText(newText) {
-  const loginButton = document.getElementById("login");
-  if (loginButton) {
-    loginButton.innerText = newText;
-  }
 }

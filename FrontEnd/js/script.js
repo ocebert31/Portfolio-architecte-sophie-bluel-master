@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", async() => {
   const categories = await getCategories();
   console.table(categories); 
   displayCategoryButtons(categories, works);
+
+  recupToken()
 });
 
 async function getWorks() {
@@ -75,7 +77,32 @@ function displayCategoryButtons(categoryList, workList) {
   }
 }
 
+function recupToken() {
+  // Récupérer le token depuis le localStorage
+  const token = localStorage.getItem('token');
 
+  // Vérifier si le token existe
+  if (token) {
+      // Utiliser le token, par exemple, l'envoyer avec chaque requête vers le serveur
+      console.log("Token récupéré:", token);
+      changeLoginButtonText("Log out")
+  } else {
+      console.log("Aucun token trouvé dans le localStorage.");
+      changeLoginButtonText("Log in");
+  }
+}
 
+function changeLoginButtonText(newText) {
+  const loginButton = document.getElementById("login");
+  if (loginButton) {
+    loginButton.innerText = newText;
+  }
+}
 
+/* function isUserLoggedIn() {
+  return localStorage.getItem("monToken") !== null;
+}
+ */
 
+  /*// const butcat = document.querySelector('filter')
+      // butcat.style.display = "none";*/
