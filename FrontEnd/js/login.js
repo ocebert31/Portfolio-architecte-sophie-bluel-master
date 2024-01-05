@@ -42,7 +42,7 @@ function linklogin() {
     if (response.status === 200) {
       const result = await response.json();
       localStorage.setItem("token", result.token);
-      history.back();
+      window.location.replace("index.html");
       recupToken()
     } else if (response.status === 404) {
       displayError("Utilisateur introuvable");

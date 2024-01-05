@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", async() => {
   console.table(categories); 
   displayCategoryButtons(categories, works);
 
-  recupToken()
+  recupToken();
+  redirectToLogin();
 });
 
 async function getWorks() {
@@ -79,16 +80,17 @@ function displayCategoryButtons(categoryList, workList) {
 
 function recupToken() {
   // Récupérer le token depuis le localStorage
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   // Vérifier si le token existe
   if (token) {
-      // Utiliser le token, par exemple, l'envoyer avec chaque requête vers le serveur
       console.log("Token récupéré:", token);
-      changeLoginButtonText("Log out")
+      changeLoginButtonText("Logout");
+      hideFilters();
+      addModifyButton()
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
-      changeLoginButtonText("Log in");
+      changeLoginButtonText("Login");
   }
 }
 
@@ -99,10 +101,46 @@ function changeLoginButtonText(newText) {
   }
 }
 
+function redirectToLogin() {
+   // Ajoutez un gestionnaire d'événements au bouton de connexion
+  const loginButton = document.getElementById("login");
+  if (loginButton) {
+    loginButton.addEventListener("click", handleLoginClick);
+  }
+}
+
+// Fonction pour gérer le clic sur le bouton de connexion
+function handleLoginClick() {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    // Si un token existe, le supprimer
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
+  } else {
+    // Si aucun token n'existe, rediriger vers la page de connexion
+    window.location.href = "login.html";
+  }
+}
+
+function hideFilters() {
+  const filterButtons = document.querySelectorAll(".filter");
+  filterButtons.forEach(button => {
+    button.style.display = "none";
+  }); 
+}
+
+function addModifyButton() {
+  const projectsTitle = document.querySelector("#portfolio h2");
+  const modifyButton = document.createElement("button");
+  modifyButton.innerText = "Modifier";
+  projectsTitle.appendChild(modifyButton);
+}
+
 /* function isUserLoggedIn() {
   return localStorage.getItem("monToken") !== null;
 }
  */
 
-  /*// const butcat = document.querySelector('filter')
-      // butcat.style.display = "none";*/
+
+
