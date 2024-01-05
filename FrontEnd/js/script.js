@@ -133,7 +133,15 @@ function hideFilters() {
 function addModifyButton() {
   const projectsTitle = document.querySelector("#portfolio h2");
   const modifyButton = document.createElement("button");
-  modifyButton.innerText = "Modifier";
+  const icon = document.createElement("i");
+
+  icon.classList.add("fa-regular", "fa-pen-to-square");
+  icon.style = "width: 15.6px; height: 15.6px; margin-right: 8px;"
+
+  modifyButton.innerText = "modifier";
+  modifyButton.style = "font-size: 14px; background-color: white; border-width: 0px; margin-left: 15px;"
+ 
+  modifyButton.insertBefore(icon, modifyButton.firstChild);
   projectsTitle.appendChild(modifyButton);
 }
 
