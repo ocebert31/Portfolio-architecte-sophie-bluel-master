@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", async() => {
 
   recupToken();
   redirectToLogin();
+
+  designModal();
+  setupModal();
+  displayWorksMiniatures(works);
 });
 
 async function getWorks() {
@@ -85,12 +89,12 @@ function recupToken() {
   // Vérifier si le token existe
   if (token) {
       console.log("Token récupéré:", token);
-      changeLoginButtonText("Logout");
+      changeLoginButtonText("logout");
       hideFilters();
       addModifyButton()
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
-      changeLoginButtonText("Login");
+      changeLoginButtonText("login");
   }
 }
 
@@ -133,6 +137,7 @@ function hideFilters() {
 function addModifyButton() {
   const projectsTitle = document.querySelector("#portfolio h2");
   const modifyButton = document.createElement("button");
+  modifyButton.id = "bouton-modifier";
   const icon = document.createElement("i");
 
   icon.classList.add("fa-regular", "fa-pen-to-square");
@@ -145,10 +150,91 @@ function addModifyButton() {
   projectsTitle.appendChild(modifyButton);
 }
 
-/* function isUserLoggedIn() {
-  return localStorage.getItem("monToken") !== null;
-}
- */
+function designModal() {
+  const body = document.querySelector("body");
 
+  // Créer la couche d'ombre
+  const overlay = document.createElement("div");
+  overlay.id = "overlay";
+  overlay.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);";
+
+  const firstDiv = document.createElement("div");
+  firstDiv.id = "myModal"
+  firstDiv.style =  "position: absolute; top: 0; left: 0; width: 100%; height: 100%;";
+
+  const secondDiv = document.createElement("div");
+  secondDiv.style = " position: absolute; top: 130%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 530px; height: 480px;"
+
+  const span = document.createElement("span");
+  span.id = "closeModalBtn";
+  span.style = " position: absolute; top: 10px; right: 7px; font-size: 20px; cursor: pointer;"
+  span.innerText = "x";
+
+  const para = document.createElement("p");
+  para.style = "font-family: Work Sans; font-size: 22px; text-align: center; margin-top: 30px;"
+  para.innerText = "Galerie photo"
+
+  const div = document.createElement("div");
+  div.style = "padding: 10px 65px 35px 65px;"
+  div.id = "tdiv"
+
+  var ligne = document.createElement("hr");
+  ligne.style = "width: 400px"
+
+  secondDiv.appendChild(span);
+  secondDiv.appendChild(para);
+  secondDiv.appendChild(div);
+  secondDiv.appendChild(ligne);
+  firstDiv.appendChild(secondDiv);
+  body.appendChild(overlay);
+
+  body.appendChild(firstDiv);
+}
+
+function displayWorksMiniatures(worksList) {
+  const modalMiniatures = document.getElementById("tdiv");
+  modalMiniatures.innerHTML = "";
+
+  worksList.forEach((work) => {
+    const miniature = createMiniature(work);
+    modalMiniatures.appendChild(miniature);
+  });
+}
+
+function createMiniature(work) {
+  const minImage = document.createElement("img");
+  minImage.src = work.imageUrl;
+  minImage.style = "width: 70px; height: 100px; margin: 20px 7px 0px 0px";
+
+  // Retourner la miniature créée
+  return minImage;
+}
+
+function setupModal() {
+  var modal = document.getElementById("myModal");
+  let openModalBtn = document.getElementById("bouton-modifier");
+  var closeModalBtn = document.getElementById("closeModalBtn");
+  var overlay = document.getElementById("overlay");
+
+  // Open the modal
+  openModalBtn.onclick = function() {
+    modal.style.display = "block";
+    overlay.style.display = "block";
+  };
+
+  // Close the modal when the close button is clicked
+  closeModalBtn.onclick = function() {
+      modal.style.display = "none";
+      overlay.style.display = "none";
+  };
+
+  // Close the modal when clicking outside of it
+  window.onclick = function(event) {
+      if (event.target === modal) {
+          modal.style.display = "none";
+          overlay.style.display = "none";
+      }
+  };
+}
 
 
