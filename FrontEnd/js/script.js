@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", async() => {
   recupToken();
   redirectToLogin();
 
-  designModal();
-  setupModal();
   displayWorksMiniatures(works);
 });
 
@@ -92,6 +90,8 @@ function recupToken() {
       changeLoginButtonText("logout");
       hideFilters();
       addModifyButton()
+      designModal(); // TODO : a mettre dans le onclick du bouton modifier
+      setupModal(); // TODO : a retirer
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
       changeLoginButtonText("login");
@@ -148,9 +148,11 @@ function addModifyButton() {
  
   modifyButton.insertBefore(icon, modifyButton.firstChild);
   projectsTitle.appendChild(modifyButton);
+
+  // TODO : add event listener on click for designModal function
 }
 
-function designModal() {
+function designModal() { // TODO : rename to createUpdateModal
   const body = document.querySelector("body");
 
   // Créer la couche d'ombre
@@ -163,12 +165,13 @@ function designModal() {
   firstDiv.style =  "position: absolute; top: 0; left: 0; width: 100%; height: 100%;";
 
   const secondDiv = document.createElement("div");
-  secondDiv.style = " position: absolute; top: 130%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 530px; height: 480px;"
+  secondDiv.style = " position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px; height: ;"
 
   const span = document.createElement("span");
   span.id = "closeModalBtn";
   span.style = " position: absolute; top: 10px; right: 7px; font-size: 20px; cursor: pointer;"
   span.innerText = "x";
+  // TODO : click pour fermer la modal => supprimer le div container (firstDiv)
 
   const para = document.createElement("p");
   para.style = "font-family: Work Sans; font-size: 22px; text-align: center; margin-top: 30px;"
@@ -193,6 +196,7 @@ function designModal() {
 
 function displayWorksMiniatures(worksList) {
   const modalMiniatures = document.getElementById("tdiv");
+  modalMiniatures.style = "display: flex; flex-wrap: wrap; padding: 20px;";
   modalMiniatures.innerHTML = "";
 
   worksList.forEach((work) => {
@@ -202,12 +206,36 @@ function displayWorksMiniatures(worksList) {
 }
 
 function createMiniature(work) {
-  const minImage = document.createElement("img");
-  minImage.src = work.imageUrl;
-  minImage.style = "width: 70px; height: 100px; margin: 20px 7px 0px 0px";
+  const container = document.createElement("div"); // Conteneur pour l'image, le bouton, etc.
+  container.style = "position: relative;"; // Positionnement relatif pour positionner le bouton
 
-  // Retourner la miniature créée
-  return minImage;
+  const imageContainer = document.createElement("div"); // Conteneur pour l'image
+  const minImage = document.createElement("img");
+  const deleteButton = document.createElement("button"); // Bouton de suppression
+
+  minImage.src = work.imageUrl;
+  minImage.style = "width: 90px; height: 120px; margin: 20px 7px 0px 0px";
+
+  const deleteIcon = document.createElement("i");
+  deleteIcon.classList.add("fa-solid", "fa-trash-can");
+  deleteButton.appendChild(deleteIcon);
+
+  
+  deleteButton.addEventListener("click", () => {
+    // Gérer le clic sur le bouton de suppression
+    // Vous pouvez appeler une fonction pour supprimer le travail, par exemple.
+    console.log(`Clic sur le bouton de suppression pour le travail avec l'ID ${work.id}`);
+  });
+
+  imageContainer.appendChild(minImage);
+  container.appendChild(imageContainer);
+  imageContainer.appendChild(deleteButton); // Ajouter le bouton de suppression au conteneur principal
+
+  // Positionner le bouton de suppression en haut à droite
+  deleteButton.style = "position: absolute; top: 25px; right: 13px; background-color: black; color: white; padding: 5px; cursor: pointer; font-size: 10px; width: 22px; height: 22px;";
+
+  // Retourner le conteneur créé
+  return container;
 }
 
 function setupModal() {
