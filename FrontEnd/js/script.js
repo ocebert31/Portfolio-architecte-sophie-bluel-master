@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", async() => {
 
   recupToken();
   redirectToLogin();
-
-  displayWorksMiniatures(works);
 });
 
 async function getWorks() {
@@ -90,8 +88,9 @@ function recupToken() {
       changeLoginButtonText("logout");
       hideFilters();
       addModifyButton()
-      designModal(); // TODO : a mettre dans le onclick du bouton modifier
-      setupModal(); // TODO : a retirer
+      
+       // TODO : a mettre dans le onclick du bouton modifier good
+      // TODO : a retirer good
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
       changeLoginButtonText("login");
@@ -149,10 +148,14 @@ function addModifyButton() {
   modifyButton.insertBefore(icon, modifyButton.firstChild);
   projectsTitle.appendChild(modifyButton);
 
-  // TODO : add event listener on click for designModal function
+  // TODO : add event listener on click for designModal function good
+  modifyButton.addEventListener("click", () => {
+    createUpdateModal();
+     //???
+  })
 }
 
-function designModal() { // TODO : rename to createUpdateModal
+function createUpdateModal(works) {
   const body = document.querySelector("body");
 
   // Créer la couche d'ombre
@@ -160,41 +163,51 @@ function designModal() { // TODO : rename to createUpdateModal
   overlay.id = "overlay";
   overlay.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3);";
 
-  const firstDiv = document.createElement("div");
-  firstDiv.id = "myModal"
-  firstDiv.style =  "position: absolute; top: 0; left: 0; width: 100%; height: 100%;";
+  // Créer la fenêtre modale
+  const modal = document.createElement("div");
+  modal.id = "myModal";
+  modal.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
 
-  const secondDiv = document.createElement("div");
-  secondDiv.style = " position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px; height: ;"
+  // Créer le bouton de fermeture
+  const closeBtn = document.createElement("span");
+  closeBtn.id = "closeModalBtn";
+  closeBtn.style = "position: absolute; top: 10px; right: 7px; font-size: 20px; cursor: pointer;";
+  closeBtn.innerText = "x";
+  closeBtn.addEventListener("click", () => {
+    modal.remove();
+    overlay.remove();
+  });
+  
+  // Ajouter un écouteur d'événements pour fermer la modal lorsque vous cliquez n'importe où sur le document
+  document.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      modal.remove();
+      overlay.remove();
+    }
+  });
 
-  const span = document.createElement("span");
-  span.id = "closeModalBtn";
-  span.style = " position: absolute; top: 10px; right: 7px; font-size: 20px; cursor: pointer;"
-  span.innerText = "x";
-  // TODO : click pour fermer la modal => supprimer le div container (firstDiv)
+  // Créer le titre de la modal
+  const title = document.createElement("p");
+  title.style = "font-family: Work Sans; font-size: 22px; text-align: center; margin-top: 30px;";
+  title.innerText = "Galerie photo";
 
-  const para = document.createElement("p");
-  para.style = "font-family: Work Sans; font-size: 22px; text-align: center; margin-top: 30px;"
-  para.innerText = "Galerie photo"
+  // Ajouter les éléments à la fenêtre modale
+  modal.appendChild(closeBtn);
+  modal.appendChild(title); 
+  
+  // Créer la div pour les travaux miniatures
+  const worksmin = document.createElement("div");
+  worksmin.id = "tdiv";
+  modal.appendChild(worksmin);
 
-  const div = document.createElement("div");
-  div.style = "padding: 10px 65px 35px 65px;"
-  div.id = "tdiv"
-
-  var ligne = document.createElement("hr");
-  ligne.style = "width: 400px"
-
-  secondDiv.appendChild(span);
-  secondDiv.appendChild(para);
-  secondDiv.appendChild(div);
-  secondDiv.appendChild(ligne);
-  firstDiv.appendChild(secondDiv);
+  // Ajouter la fenêtre modale à la page
   body.appendChild(overlay);
+  body.appendChild(modal);
 
-  body.appendChild(firstDiv);
+  displayWorksMiniatures(works);
 }
 
-function displayWorksMiniatures(worksList) {
+  function displayWorksMiniatures(worksList) {
   const modalMiniatures = document.getElementById("tdiv");
   modalMiniatures.style = "display: flex; flex-wrap: wrap; padding: 20px;";
   modalMiniatures.innerHTML = "";
@@ -237,32 +250,4 @@ function createMiniature(work) {
   // Retourner le conteneur créé
   return container;
 }
-
-function setupModal() {
-  var modal = document.getElementById("myModal");
-  let openModalBtn = document.getElementById("bouton-modifier");
-  var closeModalBtn = document.getElementById("closeModalBtn");
-  var overlay = document.getElementById("overlay");
-
-  // Open the modal
-  openModalBtn.onclick = function() {
-    modal.style.display = "block";
-    overlay.style.display = "block";
-  };
-
-  // Close the modal when the close button is clicked
-  closeModalBtn.onclick = function() {
-      modal.style.display = "none";
-      overlay.style.display = "none";
-  };
-
-  // Close the modal when clicking outside of it
-  window.onclick = function(event) {
-      if (event.target === modal) {
-          modal.style.display = "none";
-          overlay.style.display = "none";
-      }
-  };
-}
-
 
