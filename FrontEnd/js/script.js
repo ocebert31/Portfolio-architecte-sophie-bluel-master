@@ -201,14 +201,15 @@ function createUpdateModal(worksList) {
   body.appendChild(modal);
 
   // Créez un nouvel élément div pour représenter le trait
-  const horizontalLine = document.createElement('div');
-  horizontalLine.style.borderTop = "1px solid #B3B3B3"; // Changez la couleur et l'épaisseur selon vos besoins
+  const horizontalLine = document.createElement("hr");
+  horizontalLine.style.borderTop = "1px solid #B3B3B3; width: 400px"; // Changez la couleur et l'épaisseur selon vos besoins
   modal.appendChild(horizontalLine)
 
   // creer un bouton ajouter une photo
   const buttonAjout = document.createElement("button")
   buttonAjout.type = "submit";
-  
+  buttonAjout
+
   modal.appendChild(buttonAjout);
 
   displayWorksMiniatures(worksList);
