@@ -8,7 +8,9 @@ document.addEventListener("DOMContentLoaded", async() => {
   displayCategoryButtons(categories, works);
 
   recupToken(works);
-  redirectToLogin();
+  redirectToLogin();    
+  
+
 });
 
 async function getWorks() {
@@ -184,8 +186,9 @@ function createUpdateModal(worksList) {
 
   // Créer le titre de la modal
   const title = document.createElement("p");
-  title.style = "font-family: Work Sans; font-size: 22px; text-align: center; margin-top: 30px;";
+  title.style = "font-family: Work Sans; font-size: 26px; text-align: center; margin-top: 30px;";
   title.innerText = "Galerie photo";
+  title.id = "title";
 
   // Ajouter les éléments à la fenêtre modale
   modal.appendChild(closeBtn);
@@ -206,11 +209,15 @@ function createUpdateModal(worksList) {
   modal.appendChild(horizontalLine)
 
   // creer un bouton ajouter une photo
-  const buttonAjout = document.createElement("button")
-  buttonAjout.type = "submit";
-  buttonAjout
-
-  modal.appendChild(buttonAjout);
+  const inputAjout = document.createElement("input")
+  inputAjout.type = "submit";
+  inputAjout.value = "Ajouter une photo"
+  inputAjout.style = "display: flex; justify-content: center; height: 36px; font-size: 14px;"
+  inputAjout.id = "inputAjout";
+  modal.appendChild(inputAjout);
+  inputAjout.addEventListener("click", () => {
+    handleOtherModal();
+  })
 
   displayWorksMiniatures(worksList);
 }
@@ -218,7 +225,6 @@ function createUpdateModal(worksList) {
 function displayWorksMiniatures(worksList) {
   const modalMiniatures = document.getElementById("tdiv");
   modalMiniatures.style = "display: flex; flex-wrap: wrap; padding: 20px 0px 20px 30px";
-
 
   worksList.forEach((work) => {
     const miniature = createMiniature(work);
@@ -258,18 +264,104 @@ function createMiniature(work) {
   const deleteIcon = document.createElement("i");
   deleteIcon.classList.add("fa-solid", "fa-trash-can");
   deleteButton.appendChild(deleteIcon);
-  deleteButton.addEventListener("click", () => {
-    // Gérer le clic sur le bouton de suppression
-    console.log(`Clic sur le bouton de suppression pour le travail avec l'ID ${work.id}`);
+  deleteButton.addEventListener("click", async () => {
+    // Utiliser la fonction pour supprimer un travail
+    const isDeleted = await deleteWork(work.id);
+    if (isDeleted) {
+      container.remove();
+    } else {
+      console.error(`Échec de la suppression du travail avec l'ID ${work.id}.`);
+    }
   });
-
+  
   imageContainer.appendChild(minImage);
   container.appendChild(imageContainer);
   imageContainer.appendChild(deleteButton); 
 
-  // Positionner le bouton de suppression en haut à droite
   deleteButton.style = "position: absolute; top: 25px; right: 13px; background-color: black; color: white; padding: 5px; cursor: pointer; font-size: 10px; width: 22px; height: 22px;";
 
   // Retourner le conteneur créé
   return container;
+}
+
+async function deleteWork(workId) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Ajoutez le token d'authentification
+    },
+  });
+
+  if (response.status === 200) {
+    return true; // La suppression a réussi
+  } else {
+    return false;
+  }
+}
+
+function handleOtherModal() {
+  // Modifier le titre de la modal
+  let title = document.getElementById("title");
+  title.innerText = "Ajout photo";
+
+  createAjoutPicture();
+  createButtonAjoutPicture();
+
+  // Modifier le texte du bouton pour refléter l'action de validation
+  let inputAjout = document.getElementById("inputAjout");
+  inputAjout.value = "Valider";
+
+  // Supprimer la div qui contient les miniatures des travaux (s'il y en a une)
+  let divMinWorks = document.getElementById("tdiv");
+  if (divMinWorks) {
+    divMinWorks.remove();
+  }
+}
+
+
+
+function createAjoutPicture() {
+  // Créer une nouvelle div pour tous (vous pouvez ajuster la taille et le style selon vos besoins)
+  let divForAll = document.createElement("div");
+  divForAll.style = "border-radius: 3px; background-color: #E8F1F6; margin: 15px 45px 15px 45px;";
+  divForAll.id = "divForAll";
+  
+  let titlee = document.getElementById("title");
+  // Insérer la nouvelle div après le titre
+  titlee.insertAdjacentElement("afterend", divForAll);
+
+  // creer div pour icon
+  let divInsertIcon = document.createElement("div");
+divInsertIcon.style = "border-radius: 3px; background-color: #E8F1F6; margin: 10px; text-align: center;";
+divInsertIcon.id = "divIcon";
+
+  // inserer la div pour image dans la div pour tout
+  divForAll.appendChild(divInsertIcon);
+
+  // creation icon
+  let iconPicture = document.createElement("i");
+  iconPicture.id = "icon";
+  iconPicture.classList.add("fa-regular", "fa-image");
+  iconPicture.style = "color: #B9C5CC; font-size: 70px; margin: 20px;";
+  divInsertIcon.appendChild(iconPicture);
+}
+
+function createButtonAjoutPicture() {
+  // creer div pour bouton
+  let divButton = document.createElement("button");
+
+  // creation bouton ajout photo
+  let buttonAjoutPhoto = document.createElement("button");
+  buttonAjoutPhoto.innerText = "+ Ajouter Photo";
+  buttonAjoutPhoto.type = "submit";
+  buttonAjoutPhoto.style = "border-radius: 50px; border-width: 0px; background-color: #CBD6DC; color: #306685; font-size: 14px; font-weight: 500; Width: 173px; height: 36px; text-align: center;";  // Ajoutez le style de centrage
+
+  divButton.appendChild(buttonAjoutPhoto);
+
+  let divInsertIcon = document.getElementById("divIcon");
+  divInsertIcon.insertAdjacentElement("afterend", divButton);
+  divInsertIcon.style = "display:flex; justify-content:center;"
 }
