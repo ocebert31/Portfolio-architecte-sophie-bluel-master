@@ -309,6 +309,7 @@ function handleOtherModal() {
 
   createAjoutPicture();
   createButtonAjoutPicture();
+  createInputTitleCategories();
 
   // Modifier le texte du bouton pour refléter l'action de validation
   let inputAjout = document.getElementById("inputAjout");
@@ -321,47 +322,68 @@ function handleOtherModal() {
   }
 }
 
-
-
 function createAjoutPicture() {
-  // Créer une nouvelle div pour tous (vous pouvez ajuster la taille et le style selon vos besoins)
+  // Créer une nouvelle div pour tous
   let divForAll = document.createElement("div");
-  divForAll.style = "border-radius: 3px; background-color: #E8F1F6; margin: 15px 45px 15px 45px;";
+  divForAll.style = "display: flex; flex-direction: column; align-items: center; border-radius: 3px; background-color: #E8F1F6; margin: 15px 45px 15px 45px;";
   divForAll.id = "divForAll";
-  
-  let titlee = document.getElementById("title");
+
   // Insérer la nouvelle div après le titre
-  titlee.insertAdjacentElement("afterend", divForAll);
-
-  // creer div pour icon
-  let divInsertIcon = document.createElement("div");
-divInsertIcon.style = "border-radius: 3px; background-color: #E8F1F6; margin: 10px; text-align: center;";
-divInsertIcon.id = "divIcon";
-
-  // inserer la div pour image dans la div pour tout
-  divForAll.appendChild(divInsertIcon);
+  let title = document.getElementById("title");
+  title.insertAdjacentElement("afterend", divForAll);
 
   // creation icon
   let iconPicture = document.createElement("i");
   iconPicture.id = "icon";
   iconPicture.classList.add("fa-regular", "fa-image");
   iconPicture.style = "color: #B9C5CC; font-size: 70px; margin: 20px;";
-  divInsertIcon.appendChild(iconPicture);
+  divForAll.appendChild(iconPicture);
 }
 
 function createButtonAjoutPicture() {
-  // creer div pour bouton
-  let divButton = document.createElement("button");
-
-  // creation bouton ajout photo
+  // creation bouton ajout photo et texte
   let buttonAjoutPhoto = document.createElement("button");
   buttonAjoutPhoto.innerText = "+ Ajouter Photo";
   buttonAjoutPhoto.type = "submit";
-  buttonAjoutPhoto.style = "border-radius: 50px; border-width: 0px; background-color: #CBD6DC; color: #306685; font-size: 14px; font-weight: 500; Width: 173px; height: 36px; text-align: center;";  // Ajoutez le style de centrage
+  buttonAjoutPhoto.style = "border-radius: 50px; border-width: 0px; background-color: #CBD6DC; color: #306685; font-size: 14px; font-weight: 500; Width: 173px; height: 36px; ";
 
-  divButton.appendChild(buttonAjoutPhoto);
+  let textData = document.createElement("p")
+  textData.innerText = "jpg, png : 4mo max"
+  textData.style = "font-size: 10px; color: #444444; padding: 5px 0px 15px 0px;"
 
-  let divInsertIcon = document.getElementById("divIcon");
-  divInsertIcon.insertAdjacentElement("afterend", divButton);
-  divInsertIcon.style = "display:flex; justify-content:center;"
+  let divForAll = document.getElementById("divForAll");
+  divForAll.appendChild(buttonAjoutPhoto);
+  divForAll.appendChild(textData);
 }
+
+function createInputTitleCategories() {
+  let divLabel = document.createElement("div");
+  divLabel.style = "display: flex; flex-direction: column; border-radius: 3px; margin: 15px 45px 15px 45px;"
+
+  let labelTitle = document.createElement("label");
+  labelTitle.innerText = "Titre";
+  // labelTitle.class = label;
+  let inputTitle = document.createElement("input");
+
+  let labelCategorie = document.createElement("label");
+  labelCategorie.innerText = "Categorie";
+  // labelCategorie.class = "label";
+  let inputCategorie = document.createElement("input");
+
+  // label.classList.add = "font-weight: 500; font-size: 14px; color: #3D3D3D;"
+
+  divLabel.appendChild(labelTitle);
+  divLabel.appendChild(inputTitle);
+  divLabel.appendChild(labelCategorie);
+  divLabel.appendChild(inputCategorie);
+
+  let divForAll = document.getElementById("divForAll");
+  divForAll.insertAdjacentElement("afterend", divLabel);
+}
+
+
+
+{/* <label for="email" class="dispositionLabel">titre</label>
+<input type="email" name="email" class="allInputStyle" id="email">
+<label for="password" class="dispositionLabel">Categorie</label>
+<input type="password" name="password" class="allInputStyle"></input> */}
