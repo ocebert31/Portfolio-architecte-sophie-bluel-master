@@ -7,10 +7,8 @@ document.addEventListener("DOMContentLoaded", async() => {
   console.table(categories); 
   displayCategoryButtons(categories, works);
 
-  recupToken(works);
+  recupToken(works, );
   redirectToLogin();    
-  
-
 });
 
 async function getWorks() {
@@ -35,7 +33,7 @@ function displayWorks(worksList) {
     figure.appendChild(figcaption);
     gallery.appendChild(figure);
   });
-}
+} 
 
 async function getCategories() {
   const response = await fetch("http://localhost:5678/api/categories");
@@ -80,7 +78,7 @@ function displayCategoryButtons(categoryList, workList) {
   }
 }
 
-function recupToken(worksList) {
+function recupToken(worksList, worksListNew) {
   // Récupérer le token depuis le localStorage
   const token = localStorage.getItem("token");
 
@@ -90,7 +88,7 @@ function recupToken(worksList) {
       changeLoginButtonText("logout");
       editionHeadband();
       hideFilters();
-      addModifyButton(worksList)
+      addModifyButton(worksList, worksListNew)
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
       changeLoginButtonText("login");
@@ -133,7 +131,7 @@ function hideFilters() {
   }); 
 }
 
-  function addModifyButton(worksList) {
+  function addModifyButton(worksList, worksListNew) {
   const projectsTitle = document.querySelector("#portfolio h2");
   const modifyButton = document.createElement("button");
   modifyButton.id = "bouton-modifier";
@@ -149,11 +147,11 @@ function hideFilters() {
   projectsTitle.appendChild(modifyButton);
 
   modifyButton.addEventListener("click", () => {
-    createUpdateModal(worksList);
+    createUpdateModal(worksList, worksListNew);
   })
 }
 
-function createUpdateModal(worksList) {
+function createUpdateModal(worksList, worksListNew) {
   const body = document.querySelector("body");
 
   // Créer la couche d'ombre
@@ -164,7 +162,7 @@ function createUpdateModal(worksList) {
   // Créer la fenêtre modale
   const modal = document.createElement("div");
   modal.id = "myModal";
-  modal.style = "position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
+  modal.style = "position: absolute; top: 70%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
 
   // Créer le bouton de fermeture
   const closeBtn = document.createElement("span");
@@ -216,7 +214,7 @@ function createUpdateModal(worksList) {
   inputAjout.id = "inputAjout";
   modal.appendChild(inputAjout);
   inputAjout.addEventListener("click", () => {
-    handleOtherModal();
+    handleOtherModal(worksListNew);
     displayCrossArrow();
   })
   displayWorksMiniatures(worksList);
@@ -338,7 +336,7 @@ async function deleteWork(workId) {
 
 let modalExists = false;
 
-function handleOtherModal() {
+function handleOtherModal(worksListNew) {
   // Vérifiez si la modal existe déjà
   if (modalExists) {
     return true;
@@ -348,7 +346,7 @@ function handleOtherModal() {
   let title = document.getElementById("title");
   title.innerText = "Ajout photo";
 
-  createAjoutPicture();
+  createAjoutPicture(worksListNew);
   createText();
   createInputTitleCategories();
 
@@ -358,13 +356,23 @@ function handleOtherModal() {
   inputAjout.addEventListener("click", () => {
     // Appeler la fonction pour envoyer le nouveau projet au backend
     sendNewProject();
+    handleImageChange(worksListNew);
+    displayCrossArrow();
   });
 
   function sendNewProject() {
     // Récupérer les valeurs du formulaire
     const title = document.querySelector("#divLabel input[type='text']").value;
     const category = document.querySelector("#container select").value;
-  
+    const image = document.getElementById('inputImage').files[0];
+    // TODO: Ajouter file binary
+    const formData  = new FormData();
+    console.log(title)
+    console.log(category)
+    console.log(image)
+    formData.append('title', title);
+    formData.append('category', category)
+    formData.append('image', image)
     // Créer un objet représentant le nouveau projet
     const newProject = {
       title: title,
@@ -376,22 +384,41 @@ function handleOtherModal() {
     fetch("http://localhost:5678/api/works", {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+        'Authorization': `bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify(newProject),
+      body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-      // Traitez la réponse du serveur si nécessaire
-      console.log("Nouveau projet ajouté :", data);
-      
-    })
-    .catch(error => {
-      console.error('Erreur lors de l\'ajout du projet:', error);
-      // Gérez l'erreur si nécessaire
-    });
+      .then(response => response.json())
+      .then(data => {
+        // Traitez la réponse du serveur si nécessaire
+        console.log("Nouveau projet ajouté :");
+        console.log(JSON.stringify(data));
+        // Envoyer une requête GET au backend après la réussite de la requête POST
+       window.location.reload();
+        //   .then(response => {
+        //     if (!response.ok) {
+        //       throw new Error(`Erreur HTTP! Statut : ${response.status}`);
+        //     }
+        //     return response.json();
+        //   })
+        //   .then(updatedWorksList => {
+        //     // Mettez à jour worksList avec les données reçues du backend
+        //     console.table(updatedWorksList);
+        //     displayWorks(updatedWorksList);
+        //   })
+        //   .catch(error => {
+        //     console.error("Erreur lors de la récupération des travaux :", error);
+        //     // Gérez l'erreur selon vos besoins
+        //   });
+  
+        // // ... (le reste de votre code, si nécessaire)
+      })
+      .catch(error => {
+        console.error('Erreur lors de l\'ajout du projet:', error);
+        // Gérez l'erreur si nécessaire
+      });
   }
+  
 
   // Supprimer la div qui contient les miniatures des travaux (s'il y en a une)
   let divMinWorks = document.getElementById("tdiv");
@@ -413,7 +440,7 @@ function createText() {
   divPicturesUsers.appendChild(textData);
 }
 
-function createAjoutPicture() {
+function createAjoutPicture(worksListNew) {
   // Créer une nouvelle div pour tous
   let divForAll = document.createElement("div");
   divForAll.style = "display: flex; flex-direction: column; align-items: center; border-radius: 3px; background-color: #E8F1F6; margin: 25px 45px 15px 45px;";
@@ -443,7 +470,9 @@ function createAjoutPicture() {
   inputImage.style.display = "none"; // Masquer le champ de fichier
 
   // Ajoutez un gestionnaire d'événements pour le changement de l'élément input
-  inputImage.addEventListener("change", handleImageChange);
+  inputImage.addEventListener("change", (event) => {
+    handleImageChange(event, worksListNew)
+  });
 
   // Créez un bouton personnalisé
   const customButton = document.createElement("button");
@@ -467,7 +496,60 @@ function createAjoutPicture() {
   divPictureUsers.appendChild(customButton);
 }
 
-function handleImageChange(event) {
+
+
+function createInputTitleCategories() {
+  let divLabel = document.createElement("div");
+  divLabel.style = "display: flex; flex-direction: column; border-radius: 3px; margin: 15px 45px 15px 45px;"
+  divLabel.id = "divLabel";
+
+  let labelTitle = document.createElement("label");
+  labelTitle.innerText = "Titre";
+  labelTitle.classList.add("label");
+
+  let inputTitle = document.createElement("input");
+  inputTitle.id = "inputTitle";
+  inputTitle.type = "text";
+  inputTitle.style = "width: 412px; height: 45px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px;";
+
+  let labelCategorie = document.createElement("label");
+  labelCategorie.innerText = "Categorie";
+  labelCategorie.classList.add("label");
+
+  divLabel.appendChild(labelTitle);
+  divLabel.appendChild(inputTitle);
+  divLabel.appendChild(labelCategorie);
+  
+  // Créer un élément de liste déroulante
+  let selectList = document.createElement("select");
+  selectList.id = "selectList";
+  selectList.style = "width: 420px; height: 51px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px 10px 40px 10px;";
+  let options = ["Bar & Restaurant", "Option 2", "Option 3"];
+
+  for (let i = 0; i < options.length; i++) {
+      let option = document.createElement("option");
+      option.value = i + 1;
+      option.text = options[i];
+      selectList.appendChild(option);
+  }
+
+  // Créer le conteneur "container" avant de l'utiliser
+  let container = document.createElement("div");
+  container.id = "container";
+
+  // Ajouter la liste déroulante à la fin du conteneur "container"
+  container.appendChild(selectList);
+
+  // Ajouter le conteneur à la fin de divLabel
+  divLabel.appendChild(container);
+
+  let divForAll = document.getElementById("divForAll");
+  divForAll.insertAdjacentElement("afterend", divLabel);
+
+  styleLabelInput();
+}
+
+function handleImageChange(event, worksListNew) {
   // Récupère le champ de fichier et l'élément d'aperçu de l'image
   const inputImage = event.target;
   const previewImage = document.getElementById("previewImage");
@@ -489,57 +571,29 @@ function handleImageChange(event) {
     document.getElementById("icon").style.display = "none";
     document.getElementById("boutonAjouterPhoto").style.display = "none";
     document.getElementById("info").style.display = "none";
+
+    displayNewWorks(worksListNew);
   }
 }
 
-function createInputTitleCategories() {
-  let divLabel = document.createElement("div");
-  divLabel.style = "display: flex; flex-direction: column; border-radius: 3px; margin: 15px 45px 15px 45px;"
-  divLabel.id = "divLabel";
+function displayNewWorks(worksListNew, previewImage) {
+  let inputTitle = document.getElementById("inputTitle");
+  let selectList = document.getElementById("selectList");
 
-  let labelTitle = document.createElement("label");
-  labelTitle.innerText = "Titre";
-  labelTitle.classList.add("label");
+  // Ajoutez la nouvelle œuvre à la liste existante
+  const newWork = {
+    imageUrl: previewImage.src,
+    title: inputTitle.value,
+    category: selectList.value,  // Assurez-vous d'ajuster cela selon votre structure de données
+  };
 
-  let inputTitle = document.createElement("input");
-  inputTitle.type = "text";
-  inputTitle.style = "width: 412px; height: 45px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px;";
+  // Ajoutez la nouvelle œuvre à la liste existante
+  worksListNew.push(newWork);
 
-  let labelCategorie = document.createElement("label");
-  labelCategorie.innerText = "Categorie";
-  labelCategorie.classList.add("label");
-
-  divLabel.appendChild(labelTitle);
-  divLabel.appendChild(inputTitle);
-  divLabel.appendChild(labelCategorie);
-  
-  // Créer un élément de liste déroulante
-  let selectList = document.createElement("select");
-  selectList.style = "width: 420px; height: 51px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px 10px 40px 10px;";
-  let options = ["Bar & Restaurant", "Option 2", "Option 3"];
-
-  for (let i = 0; i < options.length; i++) {
-      let option = document.createElement("option");
-      option.value = options[i];
-      option.text = options[i];
-      selectList.appendChild(option);
-  }
-
-  // Créer le conteneur "container" avant de l'utiliser
-  let container = document.createElement("div");
-  container.id = "container";
-
-  // Ajouter la liste déroulante à la fin du conteneur "container"
-  container.appendChild(selectList);
-
-  // Ajouter le conteneur à la fin de divLabel
-  divLabel.appendChild(container);
-
-  let divForAll = document.getElementById("divForAll");
-  divForAll.insertAdjacentElement("afterend", divLabel);
-
-  styleLabelInput();
+  // Actualisez l'affichage de la galerie avec la nouvelle œuvre ajoutée
+  displayWorks(worksListNew);
 }
+
 
 function styleLabelInput() {
   let labels = document.querySelectorAll(".label");
