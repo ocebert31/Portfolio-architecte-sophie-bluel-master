@@ -164,7 +164,7 @@ function createUpdateModal(worksList) {
   // Créer la fenêtre modale
   const modal = document.createElement("div");
   modal.id = "myModal";
-  modal.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
+  modal.style = "position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
 
   // Créer le bouton de fermeture
   const closeBtn = document.createElement("span");
@@ -217,9 +217,43 @@ function createUpdateModal(worksList) {
   modal.appendChild(inputAjout);
   inputAjout.addEventListener("click", () => {
     handleOtherModal();
+    displayCrossArrow();
   })
-
   displayWorksMiniatures(worksList);
+}
+
+let arrowExists = false; // Ajoutez une variable pour suivre l'existence de la flèche
+
+function displayCrossArrow() {
+   // Vérifiez si la flèche existe déjà
+   if (arrowExists) {
+    return;
+  }
+
+  let croix = document.getElementById("closeModalBtn");
+  croix.style = "display: none;"
+
+  let titleModal = document.getElementById("title");
+  let iconArrow = document.createElement("i");
+  iconArrow.classList.add("fa-solid", "fa-arrow-left");
+  iconArrow.addEventListener("click", goBackToPreviousModal);
+  titleModal.insertAdjacentElement("beforebegin", iconArrow);
+
+  // Marquez la flèche comme existante
+  arrowExists = true;
+}
+
+function goBackToPreviousModal() {
+  // Supprimez la modal actuelle
+  const modal = document.getElementById("myModal");
+  const overlay = document.getElementById("overlay");
+  modal.remove();
+  overlay.remove();
+
+  // Réinitialisez la variable modalExists
+  modalExists = false;
+
+  createUpdateModal(worksList); 
 }
 
 function displayWorksMiniatures(worksList) {
@@ -302,31 +336,93 @@ async function deleteWork(workId) {
   }
 }
 
+let modalExists = false;
+
 function handleOtherModal() {
+  // Vérifiez si la modal existe déjà
+  if (modalExists) {
+    return true;
+  }
+
   // Modifier le titre de la modal
   let title = document.getElementById("title");
   title.innerText = "Ajout photo";
 
   createAjoutPicture();
-  createButtonAjoutPicture();
+  createText();
   createInputTitleCategories();
 
   // Modifier le texte du bouton pour refléter l'action de validation
   let inputAjout = document.getElementById("inputAjout");
   inputAjout.value = "Valider";
+  inputAjout.addEventListener("click", () => {
+    // Appeler la fonction pour envoyer le nouveau projet au backend
+    sendNewProject();
+  });
+
+  function sendNewProject() {
+    // Récupérer les valeurs du formulaire
+    const title = document.querySelector("#divLabel input[type='text']").value;
+    const category = document.querySelector("#container select").value;
+  
+    // Créer un objet représentant le nouveau projet
+    const newProject = {
+      title: title,
+      category: category,
+      // Ajoutez d'autres propriétés si nécessaire
+    };
+  
+    // Envoyer une requête POST au backend
+    fetch("http://localhost:5678/api/works", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(newProject),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Traitez la réponse du serveur si nécessaire
+      console.log("Nouveau projet ajouté :", data);
+      
+    })
+    .catch(error => {
+      console.error('Erreur lors de l\'ajout du projet:', error);
+      // Gérez l'erreur si nécessaire
+    });
+  }
 
   // Supprimer la div qui contient les miniatures des travaux (s'il y en a une)
   let divMinWorks = document.getElementById("tdiv");
   if (divMinWorks) {
     divMinWorks.remove();
   }
+
+  // Marquez la modal comme existante
+  modalExists = true;
+}
+
+function createText() {
+  let textData = document.createElement("p")
+  textData.innerText = "jpg, png : 4mo max"
+  textData.id = "info";
+  textData.style = "font-size: 10px; color: #444444; padding: 5px 0px 15px 0px;"
+
+  let divPicturesUsers = document.getElementById("divPictureUsers");
+  divPicturesUsers.appendChild(textData);
 }
 
 function createAjoutPicture() {
   // Créer une nouvelle div pour tous
   let divForAll = document.createElement("div");
-  divForAll.style = "display: flex; flex-direction: column; align-items: center; border-radius: 3px; background-color: #E8F1F6; margin: 15px 45px 15px 45px;";
+  divForAll.style = "display: flex; flex-direction: column; align-items: center; border-radius: 3px; background-color: #E8F1F6; margin: 25px 45px 15px 45px;";
   divForAll.id = "divForAll";
+
+  // créer une nouvelle div pour Image de l utilisateur
+  let divPictureUsers = document.createElement("div");
+  divPictureUsers.id = "divPictureUsers";
+  divPictureUsers.style = "width: 300px; display: flex;overflow: hidden; flex-direction: column; align-items: center;"
 
   // Insérer la nouvelle div après le titre
   let title = document.getElementById("title");
@@ -337,53 +433,117 @@ function createAjoutPicture() {
   iconPicture.id = "icon";
   iconPicture.classList.add("fa-regular", "fa-image");
   iconPicture.style = "color: #B9C5CC; font-size: 70px; margin: 20px;";
-  divForAll.appendChild(iconPicture);
+  divPictureUsers.appendChild(iconPicture);
+
+  // Créez un nouvel élément input de type "file"
+  const inputImage = document.createElement("input");
+  inputImage.type = "file";
+  inputImage.accept = ".jpg, .png";
+  inputImage.id = "inputImage";
+  inputImage.style.display = "none"; // Masquer le champ de fichier
+
+  // Ajoutez un gestionnaire d'événements pour le changement de l'élément input
+  inputImage.addEventListener("change", handleImageChange);
+
+  // Créez un bouton personnalisé
+  const customButton = document.createElement("button");
+  customButton.innerText = "+ Ajouter Photo";
+  customButton.id = "boutonAjouterPhoto";
+  customButton.style = "border-radius: 50px; background-color: #CBD6DC; color: #306685; font-size: 14px; font-weight: 500; width: 173px; height: 36px; cursor: pointer; border-width: 0px;";
+
+  // Associez le clic sur le bouton personnalisé à un clic sur le champ de fichier
+  customButton.addEventListener("click", () => {
+      inputImage.click();
+    // Créez un nouvel élément img pour l'aperçu de l'image
+    const previewImage = document.createElement("img");
+    previewImage.id = "previewImage";
+    previewImage.style = "width: 100%; height: 100%; object-fit: cover;";
+    divPictureUsers.appendChild(previewImage);
+  });
+
+  // Ajoutez les éléments au DOM
+  divForAll.appendChild(divPictureUsers);
+  divPictureUsers.appendChild(inputImage);
+  divPictureUsers.appendChild(customButton);
 }
 
-function createButtonAjoutPicture() {
-  // creation bouton ajout photo et texte
-  let buttonAjoutPhoto = document.createElement("button");
-  buttonAjoutPhoto.innerText = "+ Ajouter Photo";
-  buttonAjoutPhoto.type = "submit";
-  buttonAjoutPhoto.style = "border-radius: 50px; border-width: 0px; background-color: #CBD6DC; color: #306685; font-size: 14px; font-weight: 500; Width: 173px; height: 36px; ";
+function handleImageChange(event) {
+  // Récupère le champ de fichier et l'élément d'aperçu de l'image
+  const inputImage = event.target;
+  const previewImage = document.getElementById("previewImage");
 
-  let textData = document.createElement("p")
-  textData.innerText = "jpg, png : 4mo max"
-  textData.style = "font-size: 10px; color: #444444; padding: 5px 0px 15px 0px;"
+  // Vérifie si un fichier a été sélectionné
+  if (inputImage.files && inputImage.files[0]) {
+    // Crée un objet FileReader
+    const reader = new FileReader();
 
-  let divForAll = document.getElementById("divForAll");
-  divForAll.appendChild(buttonAjoutPhoto);
-  divForAll.appendChild(textData);
+    // Fonction de rappel pour mettre à jour l'aperçu de l'image
+    reader.onload = function (e) {
+      previewImage.src = e.target.result;
+    };
+
+    // Lit le fichier en tant que Data URL (base64)
+    reader.readAsDataURL(inputImage.files[0]);
+
+    // Masque l'icône, le bouton d'ajout de photo et l'élément avec l'ID "info"
+    document.getElementById("icon").style.display = "none";
+    document.getElementById("boutonAjouterPhoto").style.display = "none";
+    document.getElementById("info").style.display = "none";
+  }
 }
 
 function createInputTitleCategories() {
   let divLabel = document.createElement("div");
   divLabel.style = "display: flex; flex-direction: column; border-radius: 3px; margin: 15px 45px 15px 45px;"
+  divLabel.id = "divLabel";
 
   let labelTitle = document.createElement("label");
   labelTitle.innerText = "Titre";
-  // labelTitle.class = label;
+  labelTitle.classList.add("label");
+
   let inputTitle = document.createElement("input");
+  inputTitle.type = "text";
+  inputTitle.style = "width: 412px; height: 45px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px;";
 
   let labelCategorie = document.createElement("label");
   labelCategorie.innerText = "Categorie";
-  // labelCategorie.class = "label";
-  let inputCategorie = document.createElement("input");
-
-  // label.classList.add = "font-weight: 500; font-size: 14px; color: #3D3D3D;"
+  labelCategorie.classList.add("label");
 
   divLabel.appendChild(labelTitle);
   divLabel.appendChild(inputTitle);
   divLabel.appendChild(labelCategorie);
-  divLabel.appendChild(inputCategorie);
+  
+  // Créer un élément de liste déroulante
+  let selectList = document.createElement("select");
+  selectList.style = "width: 420px; height: 51px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px 10px 40px 10px;";
+  let options = ["Bar & Restaurant", "Option 2", "Option 3"];
+
+  for (let i = 0; i < options.length; i++) {
+      let option = document.createElement("option");
+      option.value = options[i];
+      option.text = options[i];
+      selectList.appendChild(option);
+  }
+
+  // Créer le conteneur "container" avant de l'utiliser
+  let container = document.createElement("div");
+  container.id = "container";
+
+  // Ajouter la liste déroulante à la fin du conteneur "container"
+  container.appendChild(selectList);
+
+  // Ajouter le conteneur à la fin de divLabel
+  divLabel.appendChild(container);
 
   let divForAll = document.getElementById("divForAll");
   divForAll.insertAdjacentElement("afterend", divLabel);
+
+  styleLabelInput();
 }
 
-
-
-{/* <label for="email" class="dispositionLabel">titre</label>
-<input type="email" name="email" class="allInputStyle" id="email">
-<label for="password" class="dispositionLabel">Categorie</label>
-<input type="password" name="password" class="allInputStyle"></input> */}
+function styleLabelInput() {
+  let labels = document.querySelectorAll(".label");
+  labels.forEach(label => {
+    label.style = "font-weight: 500; font-size: 14px; color: #3D3D3D; margin: 5px;";
+  });
+}
