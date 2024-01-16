@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   console.table(categories); 
   displayCategoryButtons(categories, works);
 
-  recupToken(works, );
+  recupToken(works);
   redirectToLogin();    
 });
 
@@ -22,6 +22,7 @@ function displayWorks(worksList) {
 
     worksList.forEach((work) => {
     const image = document.createElement("img");
+    image.style = "height: 100%; object-fit: cover;"
     const figcaption = document.createElement("figcaption");
     const figure = document.createElement("figure");
 
@@ -78,7 +79,7 @@ function displayCategoryButtons(categoryList, workList) {
   }
 }
 
-function recupToken(worksList, worksListNew) {
+function recupToken(worksList) {
   // Récupérer le token depuis le localStorage
   const token = localStorage.getItem("token");
 
@@ -88,7 +89,7 @@ function recupToken(worksList, worksListNew) {
       changeLoginButtonText("logout");
       editionHeadband();
       hideFilters();
-      addModifyButton(worksList, worksListNew)
+      addModifyButton(worksList)
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
       changeLoginButtonText("login");
@@ -131,7 +132,7 @@ function hideFilters() {
   }); 
 }
 
-  function addModifyButton(worksList, worksListNew) {
+  function addModifyButton(worksList) {
   const projectsTitle = document.querySelector("#portfolio h2");
   const modifyButton = document.createElement("button");
   modifyButton.id = "bouton-modifier";
@@ -147,11 +148,11 @@ function hideFilters() {
   projectsTitle.appendChild(modifyButton);
 
   modifyButton.addEventListener("click", () => {
-    createUpdateModal(worksList, worksListNew);
+    createUpdateModal(worksList);
   })
 }
 
-function createUpdateModal(worksList, worksListNew) {
+function createUpdateModal(worksList) {
   const body = document.querySelector("body");
 
   // Créer la couche d'ombre
@@ -163,6 +164,23 @@ function createUpdateModal(worksList, worksListNew) {
   const modal = document.createElement("div");
   modal.id = "myModal";
   modal.style = "position: absolute; top: 70%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; width: 550px;";
+
+  const errorMessageContainer = document.createElement("div");
+  errorMessageContainer.id = "errorMessage";
+  errorMessageContainer.style = "color: red; margin-top: 10px; text-align: center; font-size: 16px;";
+  modal.appendChild(errorMessageContainer);
+  setTimeout(() => {
+    errorMessageContainer.innerText = "";
+  }, 5000);
+
+  
+  const successMessageContainer = document.createElement("div");
+  successMessageContainer.id = "successMessage";
+  successMessageContainer.style = "color: green; margin-top: 10px;";
+  modal.appendChild(successMessageContainer);
+  setTimeout(() => {
+    successMessageContainer .innerText = "";
+  }, 5000);
 
   // Créer le bouton de fermeture
   const closeBtn = document.createElement("span");
@@ -214,7 +232,7 @@ function createUpdateModal(worksList, worksListNew) {
   inputAjout.id = "inputAjout";
   modal.appendChild(inputAjout);
   inputAjout.addEventListener("click", () => {
-    handleOtherModal(worksListNew);
+    handleOtherModal();
     displayCrossArrow();
   })
   displayWorksMiniatures(worksList);
@@ -291,7 +309,7 @@ function createMiniature(work) {
   const deleteButton = document.createElement("button"); // Bouton de suppression
 
   minImage.src = work.imageUrl;
-  minImage.style = "width: 90px; height: 120px; margin: 20px 7px 0px 0px";
+  minImage.style = "width: 90px; height: 120px; margin: 20px 7px 0px 0px; object-fit: cover;";
 
   const deleteIcon = document.createElement("i");
   deleteIcon.classList.add("fa-solid", "fa-trash-can");
@@ -336,7 +354,7 @@ async function deleteWork(workId) {
 
 let modalExists = false;
 
-function handleOtherModal(worksListNew) {
+function handleOtherModal() {
   // Vérifiez si la modal existe déjà
   if (modalExists) {
     return true;
@@ -346,7 +364,7 @@ function handleOtherModal(worksListNew) {
   let title = document.getElementById("title");
   title.innerText = "Ajout photo";
 
-  createAjoutPicture(worksListNew);
+  createAjoutPicture();
   createText();
   createInputTitleCategories();
 
@@ -356,7 +374,7 @@ function handleOtherModal(worksListNew) {
   inputAjout.addEventListener("click", () => {
     // Appeler la fonction pour envoyer le nouveau projet au backend
     sendNewProject();
-    handleImageChange(worksListNew);
+    handleImageChange();
     displayCrossArrow();
   });
 
@@ -365,7 +383,13 @@ function handleOtherModal(worksListNew) {
     const title = document.querySelector("#divLabel input[type='text']").value;
     const category = document.querySelector("#container select").value;
     const image = document.getElementById('inputImage').files[0];
-    // TODO: Ajouter file binary
+    
+    if (!title || !category || !image) {
+      let error = document.getElementById("errorMessage");
+      error.innerText = "Veuillez remplir tous les champs du formulaire.";
+      return;
+    }
+
     const formData  = new FormData();
     console.log(title)
     console.log(category)
@@ -393,39 +417,18 @@ function handleOtherModal(worksListNew) {
         // Traitez la réponse du serveur si nécessaire
         console.log("Nouveau projet ajouté :");
         console.log(JSON.stringify(data));
-        // Envoyer une requête GET au backend après la réussite de la requête POST
-       window.location.reload();
-        //   .then(response => {
-        //     if (!response.ok) {
-        //       throw new Error(`Erreur HTTP! Statut : ${response.status}`);
-        //     }
-        //     return response.json();
-        //   })
-        //   .then(updatedWorksList => {
-        //     // Mettez à jour worksList avec les données reçues du backend
-        //     console.table(updatedWorksList);
-        //     displayWorks(updatedWorksList);
-        //   })
-        //   .catch(error => {
-        //     console.error("Erreur lors de la récupération des travaux :", error);
-        //     // Gérez l'erreur selon vos besoins
-        //   });
-  
-        // // ... (le reste de votre code, si nécessaire)
+        window.location.reload();
       })
       .catch(error => {
         console.error('Erreur lors de l\'ajout du projet:', error);
         // Gérez l'erreur si nécessaire
       });
   }
-  
-
   // Supprimer la div qui contient les miniatures des travaux (s'il y en a une)
   let divMinWorks = document.getElementById("tdiv");
   if (divMinWorks) {
     divMinWorks.remove();
   }
-
   // Marquez la modal comme existante
   modalExists = true;
 }
@@ -440,7 +443,7 @@ function createText() {
   divPicturesUsers.appendChild(textData);
 }
 
-function createAjoutPicture(worksListNew) {
+function createAjoutPicture() {
   // Créer une nouvelle div pour tous
   let divForAll = document.createElement("div");
   divForAll.style = "display: flex; flex-direction: column; align-items: center; border-radius: 3px; background-color: #E8F1F6; margin: 25px 45px 15px 45px;";
@@ -470,9 +473,7 @@ function createAjoutPicture(worksListNew) {
   inputImage.style.display = "none"; // Masquer le champ de fichier
 
   // Ajoutez un gestionnaire d'événements pour le changement de l'élément input
-  inputImage.addEventListener("change", (event) => {
-    handleImageChange(event, worksListNew)
-  });
+  inputImage.addEventListener("change", handleImageChange);
 
   // Créez un bouton personnalisé
   const customButton = document.createElement("button");
@@ -524,7 +525,7 @@ function createInputTitleCategories() {
   let selectList = document.createElement("select");
   selectList.id = "selectList";
   selectList.style = "width: 420px; height: 51px; background-color: #FFFFFF; box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09); border-width: 0px; margin: 10px 10px 40px 10px;";
-  let options = ["Bar & Restaurant", "Option 2", "Option 3"];
+  let options = ["Objets", "Appartements", "Hôtels & restaurants"];
 
   for (let i = 0; i < options.length; i++) {
       let option = document.createElement("option");
@@ -549,7 +550,7 @@ function createInputTitleCategories() {
   styleLabelInput();
 }
 
-function handleImageChange(event, worksListNew) {
+function handleImageChange(event) {
   // Récupère le champ de fichier et l'élément d'aperçu de l'image
   const inputImage = event.target;
   const previewImage = document.getElementById("previewImage");
@@ -571,29 +572,8 @@ function handleImageChange(event, worksListNew) {
     document.getElementById("icon").style.display = "none";
     document.getElementById("boutonAjouterPhoto").style.display = "none";
     document.getElementById("info").style.display = "none";
-
-    displayNewWorks(worksListNew);
   }
 }
-
-function displayNewWorks(worksListNew, previewImage) {
-  let inputTitle = document.getElementById("inputTitle");
-  let selectList = document.getElementById("selectList");
-
-  // Ajoutez la nouvelle œuvre à la liste existante
-  const newWork = {
-    imageUrl: previewImage.src,
-    title: inputTitle.value,
-    category: selectList.value,  // Assurez-vous d'ajuster cela selon votre structure de données
-  };
-
-  // Ajoutez la nouvelle œuvre à la liste existante
-  worksListNew.push(newWork);
-
-  // Actualisez l'affichage de la galerie avec la nouvelle œuvre ajoutée
-  displayWorks(worksListNew);
-}
-
 
 function styleLabelInput() {
   let labels = document.querySelectorAll(".label");
