@@ -1,30 +1,26 @@
 document.addEventListener("DOMContentLoaded", async() => {
-  const works = await getWorks();
+  const works = await getWorksFromAPI();
   console.table(works);
   displayWorks(works);
  
-  const categories = await getCategories();
+  const categories = await getCategoriesFromAPI();
   console.table(categories); 
-  displayCategoryButtons(categories, works);
+  displayCategoryButtons();
 
-  recupToken(works);
+  recupToken();
   redirectToLogin();    
 });
 
-async function getWorks() {
-  const response = await fetch("http://localhost:5678/api/works");
-  return await response.json();
-}
-
-function displayWorks(worksList) {
+function displayWorks(workList) {
   const gallery = document.querySelector(".gallery")
   gallery.innerHTML = ""
 
-    worksList.forEach((work) => {
+  workList.forEach((work) => {
     const image = document.createElement("img");
     image.style = "height: 100%; object-fit: cover;"
     const figcaption = document.createElement("figcaption");
     const figure = document.createElement("figure");
+    figure.id = `work-${work.id}`;
 
     image.src = work.imageUrl;
     image.alt = work.title;
@@ -34,18 +30,13 @@ function displayWorks(worksList) {
     figure.appendChild(figcaption);
     gallery.appendChild(figure);
   });
-} 
-
-async function getCategories() {
-  const response = await fetch("http://localhost:5678/api/categories");
-  return await response.json();
 }
 
-function displayCategoryButtons(categoryList, workList) {
+function displayCategoryButtons() {
   const div = divButton();
   
   createButton("Tous", null);
-  categoryList.forEach((category) => {
+  getCategories().forEach((category) => {
     createButton(category.name, category.id);
   });
   
@@ -65,7 +56,7 @@ function displayCategoryButtons(categoryList, workList) {
     button.style = "margin-right: 13px; font-size: 17px; border-radius: 30px; border-color: #1D6154; color: #1D6154; background-color: white; font-weight: bold; padding: 6px 25px 6px 25px; border: 1px solid #1D6154; font-family: 'Work Sans';"
 
     button.addEventListener("click", () => {
-      const workFilter = workList.filter((work) => {
+      const workFilter = getWorks().filter((work) => {
         return work.category.id === categoryId || categoryId === null;
       })
       displayWorks(workFilter);
@@ -79,7 +70,7 @@ function displayCategoryButtons(categoryList, workList) {
   }
 }
 
-function recupToken(worksList) {
+function recupToken() {
   // Récupérer le token depuis le localStorage
   const token = localStorage.getItem("token");
 
@@ -89,7 +80,7 @@ function recupToken(worksList) {
       changeLoginButtonText("logout");
       editionHeadband();
       hideFilters();
-      addModifyButton(worksList)
+      addModifyButton()
   } else {
       console.log("Aucun token trouvé dans le localStorage.");
       changeLoginButtonText("login");
@@ -130,7 +121,7 @@ function hideFilters() {
 }
 
 // Fonction qui permet d'ajouter le bouton modifier
-function addModifyButton(worksList) {
+function addModifyButton() {
   const projectsTitle = document.querySelector("#portfolio h2");
   const modifyButton = document.createElement("button");
   modifyButton.id = "bouton-modifier";
@@ -146,7 +137,7 @@ function addModifyButton(worksList) {
   projectsTitle.appendChild(modifyButton);
 
   modifyButton.addEventListener("click", () => {
-      createUpdateModal(worksList);
+    displayDeleteWorkModal();
   })
 }
 
@@ -172,3 +163,26 @@ function handleLoginClick() {
     }
   }
   
+let works = [];
+
+async function getWorksFromAPI() {
+  const response = await fetch("http://localhost:5678/api/works");
+  works = await response.json();
+  return works;
+}
+
+function getWorks() {
+  return works;
+}
+
+let categories = [];
+
+async function getCategoriesFromAPI() {
+  const response = await fetch("http://localhost:5678/api/categories");
+  categories = await response.json();
+  return categories;
+}
+
+function getCategories() {
+  return categories;
+}
