@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   console.table(categories); 
   displayCategoryButtons();
 
-  recupToken();
+  checkAuthentication()
   redirectToLogin();    
 });
 
@@ -71,7 +71,6 @@ function displayCategoryButtons() {
     button.innerHTML = name;
     button.classList = "filter";
     div.appendChild(button);
-    button.style = "margin-right: 13px; font-size: 17px; border-radius: 30px; border-color: #1D6154; color: #1D6154; background-color: white; font-weight: bold; padding: 6px 25px 6px 25px; border: 1px solid #1D6154; font-family: 'Work Sans';";
 
     button.addEventListener("click", () => {
       const workFilter = getWorks().filter((work) => {
@@ -96,20 +95,20 @@ function divButton() {
   return div;
 }
 
-function recupToken() {
+function checkAuthentication() {
   // Récupérer le token depuis le localStorage
   const token = localStorage.getItem("token");
 
   // Vérifier si le token existe
   if (token) {
-      console.log("Token récupéré:", token);
-      changeLoginButtonText("logout");
-      editionHeadband();
-      hideFilters();
-      addModifyButton()
+    console.log("Token récupéré:", token);
+    changeLoginButtonText("logout");
+    editionHeadband();
+    hideFilters();
+    addModifyButton();
   } else {
-      console.log("Aucun token trouvé dans le localStorage.");
-      changeLoginButtonText("login");
+    console.log("Aucun token trouvé dans le localStorage.");
+    changeLoginButtonText("login");
   }
 }
 
@@ -123,7 +122,7 @@ function changeLoginButtonText(newText) {
 function editionHeadband() {
   let headband = createHeadband();
   locationHeadband(headband);
-  let textHeadband = createTextHeadband()
+  let textHeadband = createTextHeadband();
   let editionIcon = createEditionIcon();
   textHeadband.insertBefore(editionIcon, textHeadband.firstChild);
   headband.appendChild(textHeadband);
@@ -131,7 +130,7 @@ function editionHeadband() {
 
 function createHeadband() {
   const headband = document.createElement("div");
-  headband.style = "background-color: black; height: 50px;"
+  headband.style = "background-color: black; height: 50px;";
   return headband;
 }
 
@@ -143,7 +142,7 @@ function locationHeadband(headband) {
 function createTextHeadband() {
   const divEditionText = document.createElement("div");
   divEditionText.innerText = "Mode Edition";
-  divEditionText.style = "color: white; text-align: center; padding-top: 15px; font-size: 16px;"
+  divEditionText.id = "div-edition-text";
   return divEditionText;
 }
 
@@ -174,7 +173,7 @@ function addModifyButton() {
 function createModifyButton () {
   const modifyButton = document.createElement("button");
   modifyButton.innerText = "modifier";
-  modifyButton.style = "font-size: 14px; background-color: white; border-width: 0px; margin-left: 15px;"
+  modifyButton.id = "modify-button";
   modifyButton.addEventListener("click", () => {
     displayDeleteWorkModal();
   })
@@ -184,7 +183,7 @@ function createModifyButton () {
 function createModifyIcon() {
   const icon = document.createElement("i");
   icon.classList.add("fa-regular", "fa-pen-to-square");
-  icon.style = "width: 15.6px; height: 15.6px; margin-right: 8px;"
+  icon.id = "icon-modify";
   return icon;
 }
 

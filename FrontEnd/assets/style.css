@@ -223,3 +223,35 @@ legend {
 	text-decoration-line: underline;
 }
 
+.filter {
+	margin-right: 13px; 
+	font-size: 17px; 
+	border-radius: 30px; 
+	border-color: #1D6154; 
+	color: #1D6154; 
+	background-color: white;
+	font-weight: bold; 
+	padding: 6px 25px 6px 25px; 
+	border: 1px solid #1D6154; 
+	font-family: 'Work Sans';
+}
+
+#modify-button {
+	font-size: 14px; 
+	background-color: white; 
+	border-width: 0px; 
+	margin-left: 15px;
+}
+
+#div-edition-text {
+	color: white; 
+	text-align: center; 
+	padding-top: 15px; 
+	font-size: 16px;
+}
+
+#icon-modify {
+	width: 15.6px; 
+	height: 15.6px; 
+	margin-right: 8px;
+}
