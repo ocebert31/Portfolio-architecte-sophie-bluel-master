@@ -11,13 +11,37 @@ document.addEventListener("DOMContentLoaded", async() => {
   redirectToLogin();    
 });
 
+let works = [];
+
+async function getWorksFromAPI() {
+  const response = await fetch("http://localhost:5678/api/works");
+  works = await response.json();
+  return works;
+}
+
+function getWorks() {
+  return works;
+}
+
+let categories = [];
+
+async function getCategoriesFromAPI() {
+  const response = await fetch("http://localhost:5678/api/categories");
+  categories = await response.json();
+  return categories;
+}
+
+function getCategories() {
+  return categories;
+}
+
 function displayWorks(workList) {
-  const gallery = document.querySelector(".gallery")
-  gallery.innerHTML = ""
+  const gallery = document.querySelector(".gallery");
+  gallery.innerHTML = "";
 
   workList.forEach((work) => {
     const image = document.createElement("img");
-    image.style = "height: 100%; object-fit: cover;"
+    image.style = "height: 100%; object-fit: cover;";
     const figcaption = document.createElement("figcaption");
     const figure = document.createElement("figure");
     figure.id = `work-${work.id}`;
@@ -40,20 +64,14 @@ function displayCategoryButtons() {
     createButton(category.name, category.id);
   });
   
-  function divButton() {
-    const introductionTitle = document.querySelector("#portfolio h2");
-    const div = document.createElement("div");
-    introductionTitle.insertAdjacentElement("afterend", div);
-    div.style = "text-align: center; margin-bottom: 40px;";
-    return div;
-  }
+  divButton();
 
   function createButton(name, categoryId) {
     const button = document.createElement("button");
     button.innerHTML = name;
     button.classList = "filter";
     div.appendChild(button);
-    button.style = "margin-right: 13px; font-size: 17px; border-radius: 30px; border-color: #1D6154; color: #1D6154; background-color: white; font-weight: bold; padding: 6px 25px 6px 25px; border: 1px solid #1D6154; font-family: 'Work Sans';"
+    button.style = "margin-right: 13px; font-size: 17px; border-radius: 30px; border-color: #1D6154; color: #1D6154; background-color: white; font-weight: bold; padding: 6px 25px 6px 25px; border: 1px solid #1D6154; font-family: 'Work Sans';";
 
     button.addEventListener("click", () => {
       const workFilter = getWorks().filter((work) => {
@@ -68,6 +86,14 @@ function displayCategoryButtons() {
         button.style.color = "white";
     });
   }
+}
+
+function divButton() {
+  const introductionTitle = document.querySelector("#portfolio h2");
+  const div = document.createElement("div");
+  introductionTitle.insertAdjacentElement("afterend", div);
+  div.style = "text-align: center; margin-bottom: 40px;";
+  return div;
 }
 
 function recupToken() {
@@ -95,24 +121,39 @@ function changeLoginButtonText(newText) {
 }
 
 function editionHeadband() {
+  let headband = createHeadband();
+  locationHeadband(headband);
+  let textHeadband = createTextHeadband()
+  let editionIcon = createEditionIcon();
+  textHeadband.insertBefore(editionIcon, textHeadband.firstChild);
+  headband.appendChild(textHeadband);
+}
+
+function createHeadband() {
   const headband = document.createElement("div");
   headband.style = "background-color: black; height: 50px;"
+  return headband;
+}
+
+function locationHeadband(headband) {
   const header = document.querySelector("header");
   header.insertAdjacentElement("beforebegin", headband);
+}
 
+function createTextHeadband() {
+  const divEditionText = document.createElement("div");
+  divEditionText.innerText = "Mode Edition";
+  divEditionText.style = "color: white; text-align: center; padding-top: 15px; font-size: 16px;"
+  return divEditionText;
+}
+
+function createEditionIcon() {
   const editionIcon = document.createElement("i");
   editionIcon.classList.add("fa-regular", "fa-pen-to-square")
   editionIcon.style = "padding-right: 5px;"
-
-  const divEditionText = document.createElement("div");
-  divEditionText.innerText = "Mode Edition";
-  divEditionText.style = "color: white; text-align: center; padding-top: 15px; font-size: 16px;";
-
-  divEditionText.insertBefore(editionIcon, divEditionText.firstChild);
-  headband.appendChild(divEditionText);
+  return editionIcon;
 }
 
-// Fonction qui permet de cacher les boutons catégories
 function hideFilters() {
   const filterButtons = document.querySelectorAll(".filter");
   filterButtons.forEach(button => {
@@ -120,25 +161,31 @@ function hideFilters() {
   }); 
 }
 
-// Fonction qui permet d'ajouter le bouton modifier
 function addModifyButton() {
   const projectsTitle = document.querySelector("#portfolio h2");
+
+  let modifyButton = createModifyButton();
+  let modifyIcon = createModifyIcon ();
+
+  modifyButton.insertBefore(modifyIcon, modifyButton.firstChild);
+  projectsTitle.appendChild(modifyButton);
+}
+
+function createModifyButton () {
   const modifyButton = document.createElement("button");
-  modifyButton.id = "bouton-modifier";
-  const icon = document.createElement("i");
-
-  icon.classList.add("fa-regular", "fa-pen-to-square");
-  icon.style = "width: 15.6px; height: 15.6px; margin-right: 8px;"
-
   modifyButton.innerText = "modifier";
   modifyButton.style = "font-size: 14px; background-color: white; border-width: 0px; margin-left: 15px;"
-
-  modifyButton.insertBefore(icon, modifyButton.firstChild);
-  projectsTitle.appendChild(modifyButton);
-
   modifyButton.addEventListener("click", () => {
     displayDeleteWorkModal();
   })
+  return modifyButton;
+}
+
+function createModifyIcon() {
+  const icon = document.createElement("i");
+  icon.classList.add("fa-regular", "fa-pen-to-square");
+  icon.style = "width: 15.6px; height: 15.6px; margin-right: 8px;"
+  return icon;
 }
 
 function redirectToLogin() {
@@ -152,7 +199,6 @@ function redirectToLogin() {
 // Fonction pour gérer le clic sur le bouton de connexion
 function handleLoginClick() {
     const token = localStorage.getItem("token");
-  
     if (token) {
       // Si un token existe, le supprimer
       localStorage.removeItem("token");
@@ -163,26 +209,3 @@ function handleLoginClick() {
     }
   }
   
-let works = [];
-
-async function getWorksFromAPI() {
-  const response = await fetch("http://localhost:5678/api/works");
-  works = await response.json();
-  return works;
-}
-
-function getWorks() {
-  return works;
-}
-
-let categories = [];
-
-async function getCategoriesFromAPI() {
-  const response = await fetch("http://localhost:5678/api/categories");
-  categories = await response.json();
-  return categories;
-}
-
-function getCategories() {
-  return categories;
-}

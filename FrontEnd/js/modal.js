@@ -104,55 +104,126 @@ function createModal(context) {
   
   
   
-  function displayDeleteWorkModal() {
-    createModal("deleteWork");
-  
-    title = document.getElementById("modalTitle")
-    title.innerText = "Galerie photo"
-  
-    const contentBox = document.getElementById("contentBox");
-    contentBox.style = "display: flex; flex-wrap: wrap; padding: 20px 0px 20px 30px";
-    getWorks().forEach((work) => {
-        const miniature = createMiniatureForWork(work);
-        contentBox.appendChild(miniature);
+function displayDeleteWorkModal() {
+  createModal("deleteWork");
+  changeModalTitle("Galerie photo");
+ submitButtonRedirectToCreateWork() 
+ createContentBoxWorks();
+}
+
+function changeModalTitle(value) {
+  title = document.getElementById("modalTitle");
+  title.innerText = value;
+}
+
+function submitButtonRedirectToCreateWork() {
+  const submitButton = document.getElementById("submitButton");
+  submitButton.value = "Ajouter une photo"
+  submitButton.addEventListener("click", () => {
+    displayCreateWorkModal();
+  });
+}
+
+function createContentBoxWorks() {
+  const contentBox = document.getElementById("contentBox");
+  contentBox.style = "display: flex; flex-wrap: wrap; padding: 20px 0px 20px 30px";
+  getWorks().forEach((work) => {
+      const miniature = createMiniatureForWork(work);
+      contentBox.appendChild(miniature);
+  });
+}
+
+
+
+function createMiniatureForWork(work) {
+ 
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.style = "position: absolute; top: 25px; right: 13px; background-color: black; color: white; padding: 5px; cursor: pointer; font-size: 10px; width: 22px; height: 22px;";
+    
+  const deleteIcon = document.createElement("i");
+  deleteIcon.classList.add("fa-solid", "fa-trash-can");
+  deleteButton.appendChild(deleteIcon);
+  deleteButton.addEventListener("click", async () => {
+      const isDeleted = await deleteWork(work.id);
+      if (isDeleted) {
+        miniature.remove();
+        document.getElementById(`work-${work.id}`).remove();
+      } else {
+        console.error(`Échec de la suppression du travail avec l'ID ${work.id}.`);
+      }
     });
-  
-    const submitButton = document.getElementById("submitButton");
-    submitButton.value = "Ajouter une photo"
-    submitButton.addEventListener("click", () => {
-      displayCreateWorkModal();
-    });
-  }
-  
-  function createMiniatureForWork(work) {
-    const miniature = document.createElement("div"); 
-    miniature.style = "position: relative;";
-  
-    const image = document.createElement("img");
-    image.src = work.imageUrl;
-    image.style = "width: 90px; height: 120px; margin: 20px 7px 0px 0px; object-fit: cover;";
-  
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.style = "position: absolute; top: 25px; right: 13px; background-color: black; color: white; padding: 5px; cursor: pointer; font-size: 10px; width: 22px; height: 22px;";
-      
-    const deleteIcon = document.createElement("i");
-    deleteIcon.classList.add("fa-solid", "fa-trash-can");
-    deleteButton.appendChild(deleteIcon);
-    deleteButton.addEventListener("click", async () => {
-        const isDeleted = await deleteWork(work.id);
-        if (isDeleted) {
-          miniature.remove();
-          document.getElementById(`work-${work.id}`).remove();
-        } else {
-          console.error(`Échec de la suppression du travail avec l'ID ${work.id}.`);
-        }
-      });
-  
-     miniature.appendChild(image);
-     miniature.appendChild(deleteButton);
-     return miniature;
-  }
+
+    miniature.appendChild(image);
+    miniature.appendChild(deleteButton);
+    return miniature;
+}
+
+function createContainerAndMiniatureImage() {
+   const miniature = document.createElement("div"); 
+  miniature.style = "position: relative;";
+ 
+  const image = document.createElement("img");
+  image.src = work.imageUrl;
+  image.style = "width: 90px; height: 120px; margin: 20px 7px 0px 0px; object-fit: cover;";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   async function deleteWork(workId) {
     const token = localStorage.getItem("token");
@@ -175,16 +246,12 @@ function createModal(context) {
   
   function displayCreateWorkModal() {
     const panel = createModal("createWork");
-  
-    title = document.getElementById("modalTitle")
-    title.innerText = "Ajouter photo";
-  
+
+    changeModalTitle("Ajouter photo");
     const submitButton = document.getElementById("submitButton");
     submitButton.value = "Valider";
-    submitButton.addEventListener("click", event => {
+    submitButton.addEventListener("click", () => {
       submitWork();
-      event.preventDefault();
-      //TODO
     });
   
     let iconArrow = document.createElement("i");
@@ -289,7 +356,7 @@ function createModal(context) {
     const imageInput = event.target;
     const previewImage = document.getElementById("previewImage");
     // TODO
-    previewImage.id = `image-${image.id}`;
+    // previewImage.id = `image-${image.id}`;
   
     // Vérifie si un fichier a été sélectionné
     if (imageInput.files && imageInput.files[0]) {
@@ -311,7 +378,7 @@ function createModal(context) {
     }
   }
 
-  function submitWork() {
+  async function submitWork() {
     // Récupérer les valeurs du formulaire
     const errorMessageBox = document.getElementById("errorMessage");
     const title = document.getElementById("titleInput").value;
@@ -344,19 +411,18 @@ function createModal(context) {
     formData.append('image', image)
   
     // Envoyer une requête POST au backend
-    fetch("http://localhost:5678/api/works", {
+    const response = await fetch("http://localhost:5678/api/works", {
       method: 'POST',
       headers: {
         'Authorization': `bearer ${localStorage.getItem("token")}`,
       },
       body: formData,
-    })
-      .then(response => response.json())
-      .then(() => {
-        // Traitez la réponse du serveur si nécessaire
-        console.log("Nouveau projet ajouté :");
-      })
-      .catch(error => {
-        console.error('Erreur lors de l\'ajout du projet:', error);
-      });
+    });
+    if (response.status === 201) {
+      const works = await getWorksFromAPI();
+      displayWorks(works);
+      closeModal();
+    } else {
+      errorMessageBox.innerText = "Erreur lors de l'enregistrement de votre image.";
+    }
   }
