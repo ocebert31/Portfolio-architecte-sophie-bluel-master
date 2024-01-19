@@ -59,7 +59,7 @@ function checkEmail() {
 
 function displayError(message) {
   const div = document.createElement("div");
-  div.style = "color: red;";
+  div.id = "div-error-message";
   div.innerText = message
   const changeInputEmail = document.getElementById("email");
   changeInputEmail.insertAdjacentElement("afterend", div);

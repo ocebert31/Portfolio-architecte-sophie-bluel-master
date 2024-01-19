@@ -41,7 +41,7 @@ function displayWorks(workList) {
 
   workList.forEach((work) => {
     const image = document.createElement("img");
-    image.style = "height: 100%; object-fit: cover;";
+    image.id = "picture-gallery";
     const figcaption = document.createElement("figcaption");
     const figure = document.createElement("figure");
     figure.id = `work-${work.id}`;
@@ -91,7 +91,7 @@ function divButton() {
   const introductionTitle = document.querySelector("#portfolio h2");
   const div = document.createElement("div");
   introductionTitle.insertAdjacentElement("afterend", div);
-  div.style = "text-align: center; margin-bottom: 40px;";
+  div.id = "div-button-categories";
   return div;
 }
 
@@ -130,7 +130,7 @@ function editionHeadband() {
 
 function createHeadband() {
   const headband = document.createElement("div");
-  headband.style = "background-color: black; height: 50px;";
+  headband.id = "headband";
   return headband;
 }
 
@@ -149,7 +149,7 @@ function createTextHeadband() {
 function createEditionIcon() {
   const editionIcon = document.createElement("i");
   editionIcon.classList.add("fa-regular", "fa-pen-to-square")
-  editionIcon.style = "padding-right: 5px;"
+  editionIcon.id = "edition-icon";
   return editionIcon;
 }
 
