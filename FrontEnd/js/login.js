@@ -13,7 +13,7 @@ function linklogin() {
       handleResponse(response);
     
     } else {
-      displayError("le format de l'email n'est pas valide")
+      displayError("le format de l'email n'est pas valide");
     }
   });
 
@@ -32,7 +32,7 @@ function linklogin() {
       method: "POST",
       headers: {
         "accept": " application/json",
-        "Content-Type": "application/json" 
+        "Content-Type": "application/json",
       },
       body: body
     });
@@ -60,7 +60,7 @@ function checkEmail() {
 function displayError(message) {
   const div = document.createElement("div");
   div.id = "div-error-message";
-  div.innerText = message
+  div.innerText = message;
   const changeInputEmail = document.getElementById("email");
   changeInputEmail.insertAdjacentElement("afterend", div);
   changeInputEmail.addEventListener("click", function() {

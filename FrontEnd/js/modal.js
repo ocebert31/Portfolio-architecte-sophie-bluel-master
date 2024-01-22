@@ -81,11 +81,11 @@ function createContentBox(panel) {
 function createDivider(panel) {
   const divider = document.createElement("hr");
   divider.id = "divider";
-  panel.appendChild(divider)
+  panel.appendChild(divider);
 }
 
 function createSubmitBUtton(panel) {
-  const submitButton = document.createElement("input")
+  const submitButton = document.createElement("input");
   submitButton.type = "submit";
   submitButton.id = "submitButton";
   panel.appendChild(submitButton);
@@ -115,7 +115,7 @@ function submitButtonRedirectToCreateWork() {
 function createContentBoxWorks() {
   const contentBox = document.getElementById("contentBox");
   contentBox.id = "content-box-works";
-  getWorks().forEach((work) => {
+  getLocalWorks().forEach((work) => {
       const miniature = createMiniatureForWork(work);
       contentBox.appendChild(miniature);
   });
@@ -159,6 +159,7 @@ function createDeleteIcon(work, deleteButton, divMiniature) {
   deleteButton.addEventListener("click", async () => {
     const isDeleted = await deleteWork(work.id);
     if (isDeleted) {
+      deleteLocalWork(work.id);
       divMiniature.remove();
       document.getElementById(`work-${work.id}`).remove();
     } else {
@@ -274,7 +275,7 @@ function createAddImageButton(imageInput, fileSelection) {
 }
 
 function createInputFileLabel(fileSelection) {
-  const inputFileLabel = document.createElement("p")
+  const inputFileLabel = document.createElement("p");
   inputFileLabel.innerText = "jpg, png : 4mo max";
   inputFileLabel.id = "inputFileLabel";
   fileSelection.appendChild(inputFileLabel);
@@ -314,7 +315,7 @@ function createCategoryLabel(formContainer) {
 function createCategorySelect(formContainer) {
   let categorySelect = document.createElement("select");
   categorySelect.id = "categorySelect";
-  getCategories().forEach(category => {
+  getLocalCategories().forEach(category => {
     const option = document.createElement("option");
     option.value =category.id;
     option.text = category.name;
@@ -360,7 +361,7 @@ function submitWork() {
   const image = document.getElementById('imageInput').files[0];
 
   if(validateForm(image, title, category, errorMessageBox)) {
-    const formData = buildForm(title, category, image)
+    const formData = buildForm(title, category, image);
     postRequest(formData, errorMessageBox);
   }
 }
@@ -393,9 +394,9 @@ function buildForm(title, category, image) {
   // On utilise un formData pour envoyer un fichier car, avec un fichier, le body est trop large pour être strigify
   const formData  = new FormData();
   formData.append('title', title);
-  formData.append('category', category)
-  formData.append('image', image)
-  return formData
+  formData.append('category', category);
+  formData.append('image', image);
+  return formData;
 }
 
 async function postRequest(formData, errorMessageBox) {
@@ -420,7 +421,7 @@ async function postRequest(formData, errorMessageBox) {
 function createMessageSuccessBox() {
   let panelOfSuccessMessage = createPanelOfSuccessMessage();
   let successMessage = createSuccessMessage(panelOfSuccessMessage);
-  timeDisplaySucessMessage(successMessage) 
+  timeDisplaySucessMessage(successMessage);
   
   const gallery = document.querySelector(".gallery");
   gallery.insertAdjacentElement("beforebegin", successMessage);

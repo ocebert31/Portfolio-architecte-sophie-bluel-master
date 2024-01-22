@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   console.table(categories); 
   displayCategoryButtons();
 
-  checkAuthentication()
+  checkAuthentication();
   redirectToLogin();    
 });
 
@@ -19,8 +19,12 @@ async function getWorksFromAPI() {
   return works;
 }
 
-function getWorks() {
+function getLocalWorks() {
   return works;
+}
+
+function deleteLocalWork(workIdToDelete) {
+  works = works.filter(work => work.id !== workIdToDelete);
 }
 
 let categories = [];
@@ -31,7 +35,7 @@ async function getCategoriesFromAPI() {
   return categories;
 }
 
-function getCategories() {
+function getLocalCategories() {
   return categories;
 }
 
@@ -60,11 +64,9 @@ function displayCategoryButtons() {
   const div = divButton();
   
   createButton("Tous", null);
-  getCategories().forEach((category) => {
+  getLocalCategories().forEach((category) => {
     createButton(category.name, category.id);
   });
-  
-  divButton();
 
   function createButton(name, categoryId) {
     const button = document.createElement("button");
@@ -73,9 +75,10 @@ function displayCategoryButtons() {
     div.appendChild(button);
 
     button.addEventListener("click", () => {
-      const workFilter = getWorks().filter((work) => {
-        return work.category.id === categoryId || categoryId === null;
-      })
+      let workFilter = getLocalWorks();
+      if (categoryId) {
+        workFilter = workFilter.filter(work => work.category.id === categoryId);
+      }
       displayWorks(workFilter);
       document.querySelectorAll(".filter").forEach(button => {
         button.style.backgroundColor = "white";
@@ -148,7 +151,7 @@ function createTextHeadband() {
 
 function createEditionIcon() {
   const editionIcon = document.createElement("i");
-  editionIcon.classList.add("fa-regular", "fa-pen-to-square")
+  editionIcon.classList.add("fa-regular", "fa-pen-to-square");
   editionIcon.id = "edition-icon";
   return editionIcon;
 }
