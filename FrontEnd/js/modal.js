@@ -171,7 +171,7 @@ function createDeleteIcon(work, deleteButton, divMiniature) {
   
 async function deleteWork(workId) {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+  const response = await fetch(`https://portfolio-architecte-sophie-bluel-master.onrender.com/api/works/${workId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -401,7 +401,7 @@ function buildForm(title, category, image) {
 
 async function postRequest(formData, errorMessageBox) {
   // Envoyer une requête POST au backend
-  const response = await fetch("http://localhost:5678/api/works", {
+  const response = await fetch("https://portfolio-architecte-sophie-bluel-master.onrender.com/api/works", {
     method: 'POST',
     headers: {
       'Authorization': `bearer ${localStorage.getItem("token")}`,
