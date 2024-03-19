@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 let works = [];
 
 async function getWorksFromAPI() {
-  const response = await fetch("https://portfolio-architecte-sophie-bluel-master.onrender.com/api/works");
+  const response = await fetch("https://portfolio-architecte-sophie-bluel-master-37yb.onrender.com/api/works");
   works = await response.json();
   return works;
 }
@@ -30,7 +30,7 @@ function deleteLocalWork(workIdToDelete) {
 let categories = [];
 
 async function getCategoriesFromAPI() {
-  const response = await fetch("https://portfolio-architecte-sophie-bluel-master.onrender.com/api/categories");
+  const response = await fetch("https://portfolio-architecte-sophie-bluel-master-37yb.onrender.com/api/categories");
   categories = await response.json();
   return categories;
 }
